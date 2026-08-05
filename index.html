@@ -3,47 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sorteio de Livros</title>
+<title>Clube do Livro</title>
 <style>
   :root{
-    --bg-1:#f2f2f7;
-    --bg-2:#e9e9ee;
-    --card:rgba(255,255,255,.72);
-    --card-solid:#fff;
-    --field:rgba(120,120,128,.10);
-    --field-hover:rgba(120,120,128,.16);
+    --bg-1:#f2f2f7; --bg-2:#e9e9ee;
+    --card:rgba(255,255,255,.72); --card-solid:#fff;
+    --field:rgba(120,120,128,.10); --field-hover:rgba(120,120,128,.16);
     --hair:rgba(0,0,0,.07);
-    --text:#1c1c1e;
-    --text-2:rgba(60,60,67,.60);
-    --text-3:rgba(60,60,67,.32);
-    --accent:#007aff;
-    --accent-soft:rgba(0,122,255,.12);
-    --danger:#ff3b30;
-    --danger-soft:rgba(255,59,48,.12);
+    --text:#1c1c1e; --text-2:rgba(60,60,67,.60); --text-3:rgba(60,60,67,.32);
+    --accent:#007aff; --accent-soft:rgba(0,122,255,.12);
+    --green:#34c759; --green-soft:rgba(52,199,89,.14);
+    --purple:#af52de; --purple-soft:rgba(175,82,222,.14);
+    --danger:#ff3b30; --danger-soft:rgba(255,59,48,.12);
     --gold:#e8a33d;
     --shadow-s:0 1px 2px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.05);
     --shadow-l:0 2px 6px rgba(0,0,0,.04), 0 18px 50px rgba(0,0,0,.10);
-    --radius-card:26px;
-    --radius-row:15px;
+    --r-card:26px; --r-row:15px;
     --ease:cubic-bezier(.32,.72,0,1);
     --spring:cubic-bezier(.34,1.56,.64,1);
   }
   @media (prefers-color-scheme: dark){
     :root{
-      --bg-1:#000;
-      --bg-2:#141416;
-      --card:rgba(28,28,30,.72);
-      --card-solid:#1c1c1e;
-      --field:rgba(118,118,128,.24);
-      --field-hover:rgba(118,118,128,.34);
+      --bg-1:#000; --bg-2:#141416;
+      --card:rgba(28,28,30,.72); --card-solid:#1c1c1e;
+      --field:rgba(118,118,128,.24); --field-hover:rgba(118,118,128,.34);
       --hair:rgba(255,255,255,.08);
-      --text:#f5f5f7;
-      --text-2:rgba(235,235,245,.60);
-      --text-3:rgba(235,235,245,.30);
-      --accent:#0a84ff;
-      --accent-soft:rgba(10,132,255,.20);
-      --danger:#ff453a;
-      --danger-soft:rgba(255,69,58,.18);
+      --text:#f5f5f7; --text-2:rgba(235,235,245,.60); --text-3:rgba(235,235,245,.30);
+      --accent:#0a84ff; --accent-soft:rgba(10,132,255,.20);
+      --green:#30d158; --green-soft:rgba(48,209,88,.20);
+      --purple:#bf5af2; --purple-soft:rgba(191,90,242,.20);
+      --danger:#ff453a; --danger-soft:rgba(255,69,58,.18);
       --gold:#ffb340;
       --shadow-s:0 1px 2px rgba(0,0,0,.4);
       --shadow-l:0 20px 60px rgba(0,0,0,.6);
@@ -53,142 +42,228 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{
-    margin:0;
+    margin:0;font-size:17px;color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Inter,Helvetica,Arial,sans-serif;
-    font-size:17px;
-    color:var(--text);
     background:
-      radial-gradient(1200px 700px at 12% -10%, var(--accent-soft), transparent 60%),
-      radial-gradient(900px 600px at 100% 0%, rgba(175,82,222,.10), transparent 55%),
-      linear-gradient(180deg, var(--bg-1), var(--bg-2));
-    background-attachment:fixed;
-    min-height:100%;
-    display:flex;
-    justify-content:center;
-    padding:clamp(20px,5vh,64px) 20px 64px;
+      radial-gradient(1200px 700px at 10% -10%, var(--accent-soft), transparent 60%),
+      radial-gradient(900px 600px at 100% 0%, var(--purple-soft), transparent 55%),
+      linear-gradient(180deg,var(--bg-1),var(--bg-2));
+    background-attachment:fixed;min-height:100%;
+    display:flex;justify-content:center;
+    padding:clamp(18px,4vh,52px) 18px 64px;
     -webkit-font-smoothing:antialiased;
   }
   button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+  input,select,textarea{font:inherit;color:inherit}
   ul{list-style:none;margin:0;padding:0}
-  svg{display:block}
+  svg{display:block;flex:none}
+  .app{width:100%;max-width:540px}
 
-  /* ─── Layout ─────────────────────────────────────────── */
-  .app{width:100%;max-width:520px;display:flex;flex-direction:column;gap:22px}
+  /* ── Navegação / telas ── */
+  .screen{display:none}
+  .screen.on{display:block}
+  .screen.out-l{opacity:0;transform:translateX(-26px) scale(.98);filter:blur(3px)}
+  .screen.out-r{opacity:0;transform:translateX(26px) scale(.98);filter:blur(3px)}
+  .screen{transition:opacity .26s var(--ease),transform .34s var(--ease),filter .26s}
 
-  header{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .navbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;min-height:44px}
+  .back{
+    width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+    background:var(--field);color:var(--text-2);
+    transition:transform .2s var(--spring),background .2s,color .2s;
+  }
+  .back:hover{background:var(--field-hover);color:var(--text)}
+  .back:active{transform:scale(.9)}
+  .navbar h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.021em}
+
+  /* ── Home ── */
+  .hero{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:26px}
   .badge{
-    width:60px;height:60px;border-radius:19px;
-    display:grid;place-items:center;color:#fff;
-    background:linear-gradient(160deg,#0a84ff,#5e5ce6);
-    box-shadow:0 8px 24px rgba(10,132,255,.35);
+    width:64px;height:64px;border-radius:20px;display:grid;place-items:center;color:#fff;
+    background:linear-gradient(160deg,#0a84ff,#5e5ce6);box-shadow:0 10px 28px rgba(10,132,255,.35);
     animation:pop .6s var(--spring) both;
   }
-  h1{margin:2px 0 0;font-size:28px;letter-spacing:-.022em;font-weight:700}
+  h1{margin:4px 0 0;font-size:30px;font-weight:700;letter-spacing:-.024em}
   .sub{margin:0;font-size:14.5px;color:var(--text-2);letter-spacing:-.01em}
 
+  .menu{display:flex;flex-direction:column;gap:12px}
+  .tile{
+    display:flex;align-items:center;gap:15px;padding:17px 18px;
+    background:var(--card);-webkit-backdrop-filter:saturate(180%) blur(30px);backdrop-filter:saturate(180%) blur(30px);
+    border:.5px solid var(--hair);border-radius:22px;box-shadow:var(--shadow-l);
+    text-align:left;transition:transform .24s var(--spring),box-shadow .24s;
+    animation:rise .5s var(--ease) both;
+  }
+  .tile:nth-child(2){animation-delay:.06s}
+  .tile:nth-child(3){animation-delay:.12s}
+  .tile:hover{transform:translateY(-2px)}
+  .tile:active{transform:scale(.982)}
+  .tile .ic{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;color:#fff}
+  .tile .tx{flex:1;min-width:0}
+  .tile .tt{display:block;font-size:17.5px;font-weight:620;letter-spacing:-.016em}
+  .tile .ds{display:block;font-size:13.5px;color:var(--text-2);margin-top:3px;letter-spacing:-.006em}
+  .tile .ch{color:var(--text-3)}
+  .ic-blue{background:linear-gradient(160deg,#0a84ff,#0060df)}
+  .ic-green{background:linear-gradient(160deg,#34d95f,#1f9d43)}
+  .ic-purple{background:linear-gradient(160deg,#c56bf5,#8e33c9)}
+
+  /* ── Cartões e campos ── */
   .card{
-    background:var(--card);
-    -webkit-backdrop-filter:saturate(180%) blur(30px);
-    backdrop-filter:saturate(180%) blur(30px);
-    border:.5px solid var(--hair);
-    border-radius:var(--radius-card);
-    box-shadow:var(--shadow-l);
-    padding:16px;
-    overflow:hidden;
+    background:var(--card);-webkit-backdrop-filter:saturate(180%) blur(30px);backdrop-filter:saturate(180%) blur(30px);
+    border:.5px solid var(--hair);border-radius:var(--r-card);box-shadow:var(--shadow-l);
+    padding:16px;margin-bottom:14px;
   }
-
-  .view{transition:opacity .28s var(--ease), transform .32s var(--ease), filter .28s}
-  .view[hidden]{display:none}
-  .view.out{opacity:0;transform:scale(.97);filter:blur(4px)}
-
-  /* ─── Linhas de input ────────────────────────────────── */
-  .row{
-    display:grid;grid-template-rows:1fr;margin-bottom:9px;opacity:1;
-    transition:grid-template-rows .38s var(--ease), opacity .26s var(--ease), margin-bottom .38s var(--ease), transform .38s var(--ease);
+  .label{
+    font-size:12.5px;font-weight:620;letter-spacing:.045em;text-transform:uppercase;
+    color:var(--text-2);margin:2px 4px 10px;
   }
-  .row.enter{grid-template-rows:0fr;opacity:0;margin-bottom:0;transform:translateY(-8px) scale(.97)}
-  .row.leaving{grid-template-rows:0fr;opacity:0;margin-bottom:0;transform:translateX(-14px) scale(.96)}
-  .row-inner{overflow:hidden;min-height:0;display:flex;align-items:center;gap:8px}
-
   .field{
-    flex:1;min-width:0;
-    background:var(--field);
-    border-radius:var(--radius-row);
-    padding:13px 15px;
-    font-size:16.5px;letter-spacing:-.011em;color:var(--text);
-    border:1.5px solid transparent;
-    outline:none;
-    transition:background .2s, border-color .2s, box-shadow .2s, transform .2s var(--ease);
+    width:100%;background:var(--field);border-radius:var(--r-row);padding:13px 15px;
+    font-size:16.5px;letter-spacing:-.011em;border:1.5px solid transparent;outline:none;
+    transition:background .2s,border-color .2s,box-shadow .2s;
   }
   .field::placeholder{color:var(--text-3)}
   .field:hover{background:var(--field-hover)}
   .field:focus{background:var(--card-solid);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+  .field.bad{border-color:var(--danger);box-shadow:0 0 0 4px var(--danger-soft)}
+  textarea.field{resize:none;min-height:76px;line-height:1.4}
+
+  .select{position:relative}
+  .select select{
+    width:100%;appearance:none;-webkit-appearance:none;
+    background:var(--field);border-radius:var(--r-row);padding:13px 44px 13px 15px;
+    font-size:16.5px;letter-spacing:-.011em;border:1.5px solid transparent;outline:none;cursor:pointer;
+    transition:background .2s,border-color .2s,box-shadow .2s;
+  }
+  .select select:hover{background:var(--field-hover)}
+  .select select:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+  .select .chev{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-3);pointer-events:none}
 
   .icon-btn{
-    flex:none;width:36px;height:36px;border-radius:50%;
-    display:grid;place-items:center;color:var(--text-3);
-    transition:background .2s, color .2s, transform .2s var(--spring);
+    width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--text-3);
+    transition:background .2s,color .2s,transform .2s var(--spring);
   }
   .icon-btn:hover{background:var(--danger-soft);color:var(--danger)}
   .icon-btn:active{transform:scale(.86)}
 
   .add{
-    width:100%;height:46px;border-radius:var(--radius-row);
-    display:grid;place-items:center;color:var(--accent);
-    background:var(--accent-soft);
-    transition:transform .22s var(--spring), filter .2s, opacity .2s;
-    margin-top:2px;
+    width:100%;height:46px;border-radius:var(--r-row);display:grid;place-items:center;
+    color:var(--accent);background:var(--accent-soft);margin-top:2px;
+    transition:transform .22s var(--spring),filter .2s;
   }
   .add:hover{filter:brightness(1.06)}
   .add:active{transform:scale(.965)}
   .add svg{transition:transform .3s var(--spring)}
   .add:hover svg{transform:rotate(90deg)}
 
-  /* ─── Segmented control ──────────────────────────────── */
-  .segmented{
-    position:relative;display:grid;grid-template-columns:1fr 1fr;gap:4px;
-    background:var(--field);border-radius:16px;padding:4px;
-    border:.5px solid var(--hair);
+  .cta{
+    width:100%;height:58px;border-radius:19px;display:flex;align-items:center;justify-content:center;gap:10px;
+    color:#fff;font-size:17px;font-weight:640;letter-spacing:-.015em;
+    background:linear-gradient(165deg,#0a84ff,#0060df);box-shadow:0 8px 26px rgba(10,132,255,.34);
+    transition:transform .24s var(--spring),box-shadow .24s,opacity .25s,filter .2s;
   }
+  .cta:hover{filter:brightness(1.06)}
+  .cta:active{transform:scale(.975);box-shadow:0 4px 14px rgba(10,132,255,.28)}
+  .cta:disabled{opacity:.45;filter:grayscale(.35);cursor:not-allowed;transform:none;box-shadow:none}
+  .cta.gold{background:linear-gradient(165deg,#ffb340,#e8901d);box-shadow:0 8px 26px rgba(232,144,29,.34)}
+  .cta.green{background:linear-gradient(165deg,#34d95f,#1f9d43);box-shadow:0 8px 26px rgba(52,199,89,.32)}
+  .cta.purple{background:linear-gradient(165deg,#c56bf5,#8e33c9);box-shadow:0 8px 26px rgba(175,82,222,.32)}
+  .cta.soft{background:var(--field);color:var(--text);box-shadow:none;font-weight:590}
+  .cta.soft:hover{background:var(--field-hover)}
+
+  .bar{display:grid;grid-template-columns:58px 1fr;gap:10px}
+  .ghost{
+    height:58px;border-radius:19px;display:grid;place-items:center;background:var(--field);color:var(--text-2);
+    transition:transform .22s var(--spring),background .2s,color .2s;
+  }
+  .ghost:hover{background:var(--field-hover);color:var(--text)}
+  .ghost:active{transform:scale(.95)}
+
+  /* ── Segmented control ── */
+  .segmented{
+    position:relative;display:grid;gap:4px;background:var(--field);border-radius:16px;padding:4px;
+    border:.5px solid var(--hair);margin-bottom:14px;
+  }
+  .segmented[data-n="2"]{grid-template-columns:1fr 1fr}
   .thumb{
     position:absolute;top:4px;left:4px;bottom:4px;width:calc(50% - 4px);
-    background:var(--card-solid);border-radius:12.5px;
-    box-shadow:var(--shadow-s);
+    background:var(--card-solid);border-radius:12.5px;box-shadow:var(--shadow-s);
     transition:transform .38s var(--ease);
   }
-  .segmented[data-mode="elim"] .thumb{transform:translateX(calc(100% + 4px))}
+  .segmented[data-i="1"] .thumb{transform:translateX(calc(100% + 4px))}
   .seg{
-    position:relative;z-index:1;height:42px;border-radius:12px;
-    display:flex;align-items:center;justify-content:center;gap:7px;
+    position:relative;z-index:1;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:7px;
     font-size:14.5px;font-weight:590;letter-spacing:-.01em;color:var(--text-2);
-    transition:color .3s var(--ease), transform .2s var(--ease);
+    transition:color .3s var(--ease),transform .2s;
   }
   .seg[aria-selected="true"]{color:var(--text)}
   .seg:active{transform:scale(.97)}
 
-  /* ─── Botão principal ────────────────────────────────── */
-  .cta{
-    height:60px;border-radius:20px;
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    color:#fff;font-size:17.5px;font-weight:640;letter-spacing:-.015em;
-    background:linear-gradient(165deg,#0a84ff,#0060df);
-    box-shadow:0 8px 26px rgba(10,132,255,.36);
-    transition:transform .24s var(--spring), box-shadow .24s, opacity .25s, filter .2s;
+  /* ── Linhas animadas ── */
+  .row{
+    display:grid;grid-template-rows:1fr;margin-bottom:9px;opacity:1;
+    transition:grid-template-rows .38s var(--ease),opacity .26s var(--ease),margin-bottom .38s var(--ease),transform .38s var(--ease);
   }
-  .cta:hover{filter:brightness(1.06)}
-  .cta:active{transform:scale(.972);box-shadow:0 4px 14px rgba(10,132,255,.3)}
-  .cta:disabled{opacity:.42;filter:grayscale(.4);cursor:not-allowed;transform:none;box-shadow:none}
-  .cta.gold{background:linear-gradient(165deg,#ffb340,#e8901d);box-shadow:0 8px 26px rgba(232,144,29,.36)}
-  .cta.gold:active{box-shadow:0 4px 14px rgba(232,144,29,.3)}
-  .cta svg{transition:transform .45s var(--spring)}
-  .cta:hover svg{transform:rotate(-14deg) scale(1.08)}
+  .row.enter{grid-template-rows:0fr;opacity:0;margin-bottom:0;transform:translateY(-8px) scale(.97)}
+  .row.leaving{grid-template-rows:0fr;opacity:0;margin-bottom:0;transform:translateX(-14px) scale(.96)}
+  .row-inner{overflow:hidden;min-height:0;display:flex;align-items:center;gap:8px}
 
-  .shake{animation:shake .42s}
+  /* ── Blocos (membro + valor) ── */
+  .blk{
+    display:grid;grid-template-rows:1fr;margin-bottom:10px;opacity:1;
+    transition:grid-template-rows .4s var(--ease),opacity .28s var(--ease),margin-bottom .4s var(--ease),transform .4s var(--ease);
+  }
+  .blk.enter{grid-template-rows:0fr;opacity:0;margin-bottom:0;transform:translateY(-10px) scale(.97)}
+  .blk.leaving{grid-template-rows:0fr;opacity:0;margin-bottom:0;transform:translateX(-16px) scale(.96)}
+  .blk-inner{overflow:hidden;min-height:0}
+  .blk-box{background:var(--field);border-radius:19px;padding:12px;display:flex;flex-direction:column;gap:9px}
+  .blk-top{display:flex;align-items:center;gap:8px}
+  .blk-top .field{background:var(--card-solid)}
+  .blk-n{
+    flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+    font-size:12.5px;font-weight:680;color:var(--text-2);background:var(--card-solid);
+    font-variant-numeric:tabular-nums;
+  }
 
-  /* ─── Arena (sorteio) ────────────────────────────────── */
+  /* ── Estrelas ── */
+  .stars{display:flex;align-items:center;gap:2px;padding:2px 2px 0}
+  .star{
+    width:clamp(24px,7.6vw,30px);height:clamp(24px,7.6vw,30px);display:grid;place-items:center;
+    color:var(--text-3);transition:color .2s,transform .2s var(--spring);
+  }
+  .star:hover{transform:scale(1.18)}
+  .star:active{transform:scale(.9)}
+  .star.lit{color:var(--gold)}
+  .star svg{width:100%;height:100%}
+  .score{margin-left:auto;font-size:14.5px;font-weight:640;color:var(--text-2);font-variant-numeric:tabular-nums;padding-right:4px}
+  .score.set{color:var(--gold)}
+
+  /* ── Sorteio ── */
+  .pick{
+    position:relative;display:flex;align-items:center;gap:11px;padding:14px 16px;margin-bottom:9px;
+    border-radius:var(--r-row);background:var(--field);font-size:16.5px;letter-spacing:-.011em;
+    transition:transform .3s var(--spring),background .3s,opacity .45s var(--ease),color .35s,box-shadow .3s,filter .4s;
+    animation:rise .45s var(--ease) both;
+  }
+  .pick .dot{width:9px;height:9px;border-radius:50%;background:var(--text-3);transition:background .3s,transform .3s var(--spring)}
+  .pick .nm{position:relative;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pick .nm::after{content:"";position:absolute;left:0;top:50%;height:1.5px;width:0;background:currentColor;border-radius:2px;transition:width .42s var(--ease)}
+  .pick.spot{background:var(--accent-soft);transform:scale(1.028);box-shadow:0 6px 20px rgba(10,132,255,.18)}
+  .pick.spot .dot{background:var(--accent);transform:scale(1.3)}
+  .pick.dead{opacity:.38;color:var(--text-2);transform:scale(.975)}
+  .pick.dead .nm::after{width:100%}
+  .pick.dead .dot{background:var(--danger);transform:scale(.7)}
+  .pick.win{
+    background:linear-gradient(135deg,rgba(255,179,64,.20),rgba(255,179,64,.07));
+    box-shadow:0 10px 30px rgba(232,144,29,.22);transform:scale(1.035);font-weight:640;
+    animation:winPop .6s var(--spring) both;
+  }
+  .pick.win .dot{background:var(--gold);transform:scale(1.35)}
+  .counter{text-align:center;font-size:13px;color:var(--text-2);padding:4px 0 12px;font-variant-numeric:tabular-nums}
+
   .winner-bar{
     display:grid;grid-template-rows:0fr;opacity:0;margin-bottom:0;
-    transition:grid-template-rows .5s var(--ease), opacity .4s, margin-bottom .5s var(--ease);
+    transition:grid-template-rows .5s var(--ease),opacity .4s,margin-bottom .5s var(--ease);
   }
   .winner-bar.show{grid-template-rows:1fr;opacity:1;margin-bottom:14px}
   .winner-inner{overflow:hidden;min-height:0}
@@ -199,269 +274,558 @@
   }
   .winner-box .t{font-size:12px;font-weight:640;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
   .winner-box .n{font-size:19px;font-weight:680;letter-spacing:-.02em;margin-top:1px;line-height:1.2}
-  .trophy{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:#fff;
-    background:linear-gradient(160deg,#ffc76b,#e8901d);box-shadow:0 6px 18px rgba(232,144,29,.35)}
-
-  .pick{
-    position:relative;display:flex;align-items:center;gap:11px;
-    padding:14px 16px;margin-bottom:9px;border-radius:var(--radius-row);
-    background:var(--field);
-    font-size:16.5px;letter-spacing:-.011em;
-    transition:transform .3s var(--spring), background .3s, opacity .45s var(--ease), color .35s, box-shadow .3s, filter .4s;
-    animation:rowIn .45s var(--ease) both;
-  }
-  .pick .dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--text-3);transition:background .3s, transform .3s var(--spring)}
-  .pick .nm{position:relative;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .pick .nm::after{
-    content:"";position:absolute;left:0;top:50%;height:1.5px;width:0;
-    background:currentColor;border-radius:2px;transition:width .42s var(--ease);
+  .trophy{
+    width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:#fff;
+    background:linear-gradient(160deg,#ffc76b,#e8901d);box-shadow:0 6px 18px rgba(232,144,29,.35);
   }
 
-  .pick.spot{
-    background:var(--accent-soft);
-    transform:scale(1.028);
-    box-shadow:0 6px 20px rgba(10,132,255,.18);
+  /* ── Consulta / lista ── */
+  .item{
+    display:flex;align-items:flex-start;gap:12px;padding:13px 14px;margin-bottom:9px;
+    border-radius:var(--r-row);background:var(--field);
+    transition:background .25s,opacity .3s;animation:rise .4s var(--ease) both;
   }
-  .pick.spot .dot{background:var(--accent);transform:scale(1.3)}
-
-  .pick.dead{opacity:.38;color:var(--text-2);filter:blur(.15px);transform:scale(.975)}
-  .pick.dead .nm::after{width:100%}
-  .pick.dead .dot{background:var(--danger);transform:scale(.7)}
-
-  .pick.win{
-    background:linear-gradient(135deg,rgba(255,179,64,.20),rgba(255,179,64,.07));
-    box-shadow:0 10px 30px rgba(232,144,29,.22);
-    transform:scale(1.035);
-    font-weight:640;
-    animation:winPop .6s var(--spring) both;
+  .item.done{background:var(--green-soft)}
+  .check{
+    flex:none;width:26px;height:26px;border-radius:50%;margin-top:1px;
+    border:1.8px solid var(--text-3);display:grid;place-items:center;color:#fff;
+    transition:background .25s var(--ease),border-color .25s,transform .2s var(--spring);
   }
-  .pick.win .dot{background:var(--gold);transform:scale(1.35)}
+  .check:active{transform:scale(.86)}
+  .check svg{opacity:0;transform:scale(.5);transition:opacity .2s,transform .28s var(--spring)}
+  .item.done .check{background:var(--green);border-color:var(--green)}
+  .item.done .check svg{opacity:1;transform:none}
+  .check.busy{border-color:var(--accent)}
+  .item .who{font-size:15px;font-weight:620;letter-spacing:-.012em}
+  .item .guess{font-size:15px;color:var(--text-2);margin-top:3px;line-height:1.42;white-space:pre-wrap;overflow-wrap:anywhere}
+  .item.done .guess{color:var(--text)}
+  .item .bd{flex:1;min-width:0}
 
-  .counter{
-    text-align:center;font-size:13px;color:var(--text-2);
-    letter-spacing:-.005em;padding:4px 0 12px;
-    font-variant-numeric:tabular-nums;
+  .empty{text-align:center;padding:34px 16px;color:var(--text-3);display:flex;flex-direction:column;align-items:center;gap:10px}
+  .empty p{margin:0;font-size:14.5px;color:var(--text-2);letter-spacing:-.008em;max-width:280px;line-height:1.45}
+
+  /* ── Loading ── */
+  .spin{
+    width:19px;height:19px;border-radius:50%;
+    border:2px solid currentColor;border-top-color:transparent;opacity:.9;
+    animation:rot .7s linear infinite;
+  }
+  .loading{display:flex;flex-direction:column;align-items:center;gap:12px;padding:34px 0;color:var(--text-3)}
+  .loading .spin{width:26px;height:26px;border-width:2.5px}
+  .loading span{font-size:13.5px;color:var(--text-2)}
+
+  /* ── Toast ── */
+  .toast{
+    position:fixed;left:50%;top:18px;z-index:200;transform:translate(-50%,-140%);
+    display:flex;align-items:center;gap:10px;max-width:min(440px,calc(100vw - 32px));
+    padding:12px 17px;border-radius:17px;
+    background:var(--card-solid);border:.5px solid var(--hair);box-shadow:var(--shadow-l);
+    font-size:15px;font-weight:560;letter-spacing:-.012em;
+    transition:transform .5s var(--spring),opacity .3s;opacity:0;
+  }
+  .toast.show{transform:translate(-50%,0);opacity:1}
+  .toast .tic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none}
+  .toast.ok .tic{background:var(--green)}
+  .toast.err .tic{background:var(--danger)}
+
+  /* ── Setup ── */
+  .setup{border:.5px solid rgba(232,144,29,.4);background:linear-gradient(135deg,rgba(255,179,64,.14),rgba(255,179,64,.05))}
+  .setup h3{margin:0 0 6px;font-size:16.5px;font-weight:660;letter-spacing:-.016em}
+  .setup p{margin:0 0 12px;font-size:14px;color:var(--text-2);line-height:1.5}
+  .cols{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .col{
+    padding:6px 11px;border-radius:9px;background:var(--card-solid);border:.5px solid var(--hair);
+    font-size:13px;font-weight:600;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.01em;
   }
 
-  .bar{display:grid;grid-template-columns:60px 1fr;gap:10px}
-  .ghost{
-    height:60px;border-radius:20px;display:grid;place-items:center;
-    background:var(--field);color:var(--text-2);
-    transition:transform .22s var(--spring), background .2s, color .2s;
-  }
-  .ghost:hover{background:var(--field-hover);color:var(--text)}
-  .ghost:active{transform:scale(.95)}
+  #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:150}
+  .shake{animation:shake .42s}
 
-  #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99}
-
-  /* ─── Keyframes ──────────────────────────────────────── */
   @keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
-  @keyframes rowIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+  @keyframes rise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
   @keyframes winPop{0%{transform:scale(1)}55%{transform:scale(1.075)}100%{transform:scale(1.035)}}
-  @keyframes shake{
-    10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}
-    30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}
-  }
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:.01ms !important;transition-duration:.01ms !important}
-  }
+  @keyframes rot{to{transform:rotate(360deg)}}
+  @keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
 </style>
 </head>
 <body>
 
 <canvas id="confetti"></canvas>
+<div class="toast" id="toast"><span class="tic" id="toastIc"></span><span id="toastMsg"></span></div>
 
-<main class="app">
-  <header>
-    <div class="badge">
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/>
-        <path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/>
-      </svg>
+<div class="app">
+
+  <!-- ══ HOME ══ -->
+  <section class="screen on" id="scr-home">
+    <div class="hero">
+      <div class="badge">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/>
+          <path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/>
+        </svg>
+      </div>
+      <h1>Clube do Livro</h1>
+      <p class="sub">Sorteie, aposte e avalie as leituras do grupo.</p>
     </div>
-    <h1>Sorteio de Livros</h1>
-    <p class="sub">Adicione os títulos e deixe a sorte escolher.</p>
-  </header>
 
-  <!-- ── Editor ── -->
-  <section class="card view" id="viewEdit">
-    <ul id="list"></ul>
-    <button class="add" id="btnAdd" title="Adicionar livro" aria-label="Adicionar livro">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-        <path d="M12 5v14M5 12h14"/>
-      </svg>
-    </button>
+    <div class="card setup" id="setupCard" hidden>
+      <h3>Configure a planilha</h3>
+      <p>A planilha do SheetDB está vazia. Cole estes nomes na <strong>primeira linha</strong> (uma coluna cada) para liberar o cadastro:</p>
+      <div class="cols">
+        <span class="col">id</span><span class="col">tipo</span><span class="col">livro</span>
+        <span class="col">membro</span><span class="col">valor</span><span class="col">acerto</span><span class="col">data</span>
+      </div>
+      <div class="bar">
+        <button class="ghost" id="btnCopyCols" title="Copiar cabeçalho" aria-label="Copiar cabeçalho"></button>
+        <button class="cta soft" id="btnRecheck"><span class="ci"></span><span>Verificar novamente</span></button>
+      </div>
+    </div>
+
+    <div class="menu">
+      <button class="tile" data-go="sorteio">
+        <span class="ic ic-blue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="5"/>
+            <circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/>
+            <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/>
+            <circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="tx"><span class="tt">Sorteio</span><span class="ds">Escolher a próxima leitura</span></span>
+        <span class="ch"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+      </button>
+
+      <button class="tile" data-go="bolao">
+        <span class="ic ic-green">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="tx"><span class="tt">Bolão</span><span class="ds">Palpites para o final</span></span>
+        <span class="ch"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+      </button>
+
+      <button class="tile" data-go="nota">
+        <span class="ic ic-purple">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">
+            <path d="m12 3.6 2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 17l-5.25 2.75 1-5.85L3.5 9.75l5.9-.85z"/>
+          </svg>
+        </span>
+        <span class="tx"><span class="tt">Avaliação</span><span class="ds">Notas de cada membro</span></span>
+        <span class="ch"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+      </button>
+    </div>
   </section>
 
-  <!-- ── Arena ── -->
-  <section class="card view" id="viewArena" hidden>
-    <div class="winner-bar" id="winnerBar">
-      <div class="winner-inner">
-        <div class="winner-box">
-          <div class="trophy">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 0 1-12 0z"/>
-              <path d="M6 5H3.5v1.5A3.5 3.5 0 0 0 6.6 10M18 5h2.5v1.5A3.5 3.5 0 0 1 17.4 10"/>
-            </svg>
-          </div>
-          <div style="min-width:0">
-            <div class="t">Vencedor</div>
-            <div class="n" id="winnerName"></div>
+  <!-- ══ SORTEIO ══ -->
+  <section class="screen" id="scr-sorteio">
+    <div class="navbar"><button class="back" data-back title="Voltar" aria-label="Voltar"></button><h2>Sorteio</h2></div>
+
+    <div class="card" id="viewEdit">
+      <ul id="list"></ul>
+      <button class="add" id="btnAdd" title="Adicionar livro" aria-label="Adicionar livro">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+
+    <div class="card" id="viewArena" hidden>
+      <div class="winner-bar" id="winnerBar">
+        <div class="winner-inner">
+          <div class="winner-box">
+            <div class="trophy">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 0 1-12 0z"/><path d="M6 5H3.5v1.5A3.5 3.5 0 0 0 6.6 10M18 5h2.5v1.5A3.5 3.5 0 0 1 17.4 10"/>
+              </svg>
+            </div>
+            <div style="min-width:0"><div class="t">Vencedor</div><div class="n" id="winnerName"></div></div>
           </div>
         </div>
       </div>
+      <div class="counter" id="counter"></div>
+      <ul id="picks"></ul>
+      <button class="cta gold" id="btnSaveWinner" hidden style="margin-top:6px">
+        <span class="ci"></span><span>Cadastrar Livro Vencedor</span>
+      </button>
     </div>
-    <div class="counter" id="counter"></div>
-    <ul id="picks"></ul>
+
+    <div class="segmented" id="segMode" data-n="2" data-i="0" role="tablist" aria-label="Modo de sorteio">
+      <span class="thumb" aria-hidden="true"></span>
+      <button class="seg" role="tab" data-mode="single" aria-selected="true" title="Sorteio único">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="5"/>
+          <circle cx="8.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"/>
+        </svg>Único
+      </button>
+      <button class="seg" role="tab" data-mode="elim" aria-selected="false" title="Eliminação">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.2H10l-1 8.8 8.5-11.2H12z"/></svg>Eliminação
+      </button>
+    </div>
+
+    <div class="bar" style="margin-bottom:14px">
+      <button class="ghost" id="btnBackDraw" title="Voltar e editar" aria-label="Voltar e editar" style="visibility:hidden"></button>
+      <button class="cta" id="btnGo"><span class="ci"></span><span id="goText">Sortear</span></button>
+    </div>
+
+    <div class="card">
+      <div class="label">Cadastro manual</div>
+      <div class="row-inner" style="gap:8px">
+        <input class="field" id="manualBook" type="text" maxlength="120" placeholder="Título do livro" autocomplete="off">
+        <button class="ghost" id="btnManual" style="width:52px;height:49px;border-radius:15px" title="Cadastrar livro" aria-label="Cadastrar livro"></button>
+      </div>
+    </div>
   </section>
 
-  <!-- ── Controles ── -->
-  <div class="segmented" id="segmented" data-mode="single" role="tablist" aria-label="Modo de sorteio">
-    <span class="thumb" aria-hidden="true"></span>
-    <button class="seg" role="tab" data-mode="single" aria-selected="true" title="Sorteio único: escolhe o vencedor de uma vez">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="5"/>
-        <circle cx="8.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"/>
-        <circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none"/>
-        <circle cx="15.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"/>
-      </svg>
-      Único
-    </button>
-    <button class="seg" role="tab" data-mode="elim" aria-selected="false" title="Eliminação: remove um por clique até sobrar o vencedor">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M13 2 4.5 13.2H10l-1 8.8 8.5-11.2H12z"/>
-      </svg>
-      Eliminação
-    </button>
-  </div>
+  <!-- ══ BOLÃO ══ -->
+  <section class="screen" id="scr-bolao">
+    <div class="navbar"><button class="back" data-back title="Voltar" aria-label="Voltar"></button><h2>Bolão</h2></div>
 
-  <div class="bar">
-    <button class="ghost" id="btnBack" title="Voltar e editar" aria-label="Voltar e editar" style="visibility:hidden">
-      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9.5 14.5 4 9l5.5-5.5"/><path d="M4 9h11a5.5 5.5 0 0 1 0 11h-3.5"/>
-      </svg>
-    </button>
-    <button class="cta" id="btnGo" title="Sortear" aria-label="Sortear">
-      <span id="goIcon"></span>
-      <span id="goText">Sortear</span>
-    </button>
-  </div>
-</main>
+    <div class="card">
+      <div class="label">Livro ativo</div>
+      <div class="select">
+        <select id="selBolao"><option value="">Carregando…</option></select>
+        <span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+      </div>
+    </div>
+
+    <div class="segmented" id="segBolao" data-n="2" data-i="0" role="tablist">
+      <span class="thumb" aria-hidden="true"></span>
+      <button class="seg" role="tab" data-tab="send" aria-selected="true" title="Registrar palpites">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 10 18 20 6"/></svg>Registrar
+      </button>
+      <button class="seg" role="tab" data-tab="view" aria-selected="false" title="Consultar bolão">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m16.2 16.2 4.3 4.3"/></svg>Consultar
+      </button>
+    </div>
+
+    <div id="tabSend">
+      <div class="card"><ul id="betList"></ul>
+        <button class="add" id="btnAddBet" title="Adicionar membro" aria-label="Adicionar membro">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <button class="cta green" id="btnSendBets"><span class="ci"></span><span>Enviar palpites</span></button>
+    </div>
+
+    <div id="tabView" hidden>
+      <div class="bar" style="margin-bottom:14px">
+        <button class="ghost" id="btnReload" title="Atualizar" aria-label="Atualizar"></button>
+        <button class="cta soft" id="btnLoadBets"><span class="ci"></span><span>Carregar palpites</span></button>
+      </div>
+      <div class="card" id="betsBox"></div>
+    </div>
+  </section>
+
+  <!-- ══ AVALIAÇÃO ══ -->
+  <section class="screen" id="scr-nota">
+    <div class="navbar"><button class="back" data-back title="Voltar" aria-label="Voltar"></button><h2>Avaliação</h2></div>
+
+    <div class="card">
+      <div class="label">Livro ativo</div>
+      <div class="select">
+        <select id="selNota"><option value="">Carregando…</option></select>
+        <span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+      </div>
+    </div>
+
+    <div class="card"><ul id="rateList"></ul>
+      <button class="add" id="btnAddRate" title="Adicionar membro" aria-label="Adicionar membro">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+    <button class="cta purple" id="btnSendRates"><span class="ci"></span><span>Enviar notas</span></button>
+  </section>
+
+</div>
 
 <script>
 (() => {
   "use strict";
 
-  const $  = s => document.querySelector(s);
-  const list = $("#list"), picks = $("#picks"), segmented = $("#segmented");
-  const viewEdit = $("#viewEdit"), viewArena = $("#viewArena");
-  const btnGo = $("#btnGo"), goIcon = $("#goIcon"), goText = $("#goText");
-  const btnBack = $("#btnBack"), winnerBar = $("#winnerBar"), winnerName = $("#winnerName");
-  const counter = $("#counter");
+  const API = "https://sheetdb.io/api/v1/l7y6pld7widpu";
+  const $ = s => document.querySelector(s);
+  const rand = n => Math.floor(Math.random() * n);
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
   const ICON = {
-    play:  '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M7.5 4.9c0-1 1.1-1.6 2-1.1l10 6.9c.8.5.8 1.7 0 2.2l-10 6.9c-.9.6-2 0-2-1z"/></svg>',
-    bolt:  '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.2H10l-1 8.8 8.5-11.2H12z"/></svg>',
-    again: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-.7 4.5"/><path d="M20 4.5V11h-6"/></svg>',
-    trash: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16"/><path d="M9.5 6.5V4.2h5v2.3"/><path d="M6.3 6.5 7.2 20h9.6l.9-13.5"/><path d="M10.3 10.5v6M13.7 10.5v6"/></svg>'
+    plus:  '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+    play:  '<svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor"><path d="M7.5 4.9c0-1 1.1-1.6 2-1.1l10 6.9c.8.5.8 1.7 0 2.2l-10 6.9c-.9.6-2 0-2-1z"/></svg>',
+    bolt:  '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.2H10l-1 8.8 8.5-11.2H12z"/></svg>',
+    again: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-.7 4.5"/><path d="M20 4.5V11h-6"/></svg>',
+    trash: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16"/><path d="M9.5 6.5V4.2h5v2.3"/><path d="M6.3 6.5 7.2 20h9.6l.9-13.5"/><path d="M10.3 10.5v6M13.7 10.5v6"/></svg>',
+    backA: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5-7 7 7 7"/></svg>',
+    undo:  '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 14.5 4 9l5.5-5.5"/><path d="M4 9h11a5.5 5.5 0 0 1 0 11h-3.5"/></svg>',
+    save:  '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5h11L20.5 8v12.5h-15z"/><path d="M8.5 3.5v6h7v-6M8 20.5v-6h8v6"/></svg>',
+    up:    '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5"/><path d="m5.5 11.5 6.5-6.5 6.5 6.5"/></svg>',
+    refr:  '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-.7 4.5"/><path d="M20 4.5V11h-6"/></svg>',
+    copy:  '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="12" height="12" rx="3"/><path d="M15.5 5.5A2 2 0 0 0 13.5 3.5h-7a3 3 0 0 0-3 3v7a2 2 0 0 0 2 2"/></svg>',
+    check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>',
+    tick:  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>',
+    bang:  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 6v8M12 18v.01"/></svg>',
+    star:  '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 3.1 2.72 5.51 6.08.89-4.4 4.29 1.04 6.06L12 16.98l-5.44 2.87 1.04-6.06-4.4-4.29 6.08-.89z"/></svg>',
+    inbox: '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13.5h4l1.2 2.5h6.6l1.2-2.5h4"/><path d="M6 4.5h12l3.5 9v6h-19v-6z"/></svg>',
+    warn:  '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></svg>'
   };
 
-  let mode = "single";           // "single" | "elim"
-  let phase = "edit";            // "edit" | "spin" | "elim" | "done"
-  let pool = [];                 // [{name, el, dead}]
+  /* ═══ Estado ═══ */
+  const state = { books: [], booksLoaded: false, needsSetup: false, mode: "single", phase: "edit", pool: [] };
 
-  /* ────────── Editor ────────── */
+  /* ═══ API ═══ */
+  const EMPTY_SHEET = /spreadsheet is empty/i;
+
+  async function req(path, opts){
+    let res;
+    try { res = await fetch(API + path, opts); }
+    catch(e){ throw new Error("Sem conexão com a planilha."); }
+    let body = null;
+    try { body = await res.json(); } catch(e){}
+    const msg = body && body.error;
+    if(msg && EMPTY_SHEET.test(msg)){ state.needsSetup = true; renderSetup(); throw new Error("Planilha sem cabeçalho — veja a tela inicial."); }
+    if(!res.ok) throw new Error(msg || ("Erro " + res.status + " na planilha."));
+    if(msg) throw new Error(msg);
+    return body;
+  }
+
+  const api = {
+    search: q => req("/search?" + new URLSearchParams(q).toString()),
+    create: rows => req("", { method:"POST", headers:{ "Content-Type":"application/json", "Accept":"application/json" }, body: JSON.stringify({ data: rows }) }),
+    update: (id, data) => req("/id/" + encodeURIComponent(id), { method:"PATCH", headers:{ "Content-Type":"application/json", "Accept":"application/json" }, body: JSON.stringify({ data }) }),
+    keys: () => req("/keys")
+  };
+
+  /* ═══ Feedback ═══ */
+  const toast = $("#toast"), toastIc = $("#toastIc"), toastMsg = $("#toastMsg");
+  let toastT = 0;
+  function say(msg, ok = true){
+    toast.className = "toast show " + (ok ? "ok" : "err");
+    toastIc.innerHTML = ok ? ICON.tick : ICON.bang;
+    toastMsg.textContent = msg;
+    clearTimeout(toastT);
+    toastT = setTimeout(() => toast.classList.remove("show"), 3600);
+  }
+
+  function busy(btn, on, label){
+    if(on){
+      if(!btn.dataset.html) btn.dataset.html = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spin"></span>' + (label ? "<span>" + label + "</span>" : "");
+    } else {
+      btn.disabled = false;
+      if(btn.dataset.html){ btn.innerHTML = btn.dataset.html; delete btn.dataset.html; }
+    }
+  }
+
+  function loadingBox(el, txt){
+    el.innerHTML = '<div class="loading"><span class="spin"></span><span>' + txt + '</span></div>';
+  }
+  function emptyBox(el, txt, icon){
+    el.innerHTML = '<div class="empty">' + (icon || ICON.inbox) + '<p></p></div>';
+    el.querySelector("p").textContent = txt;
+  }
+  function shake(el){ el.classList.add("shake"); setTimeout(() => el.classList.remove("shake"), 450); }
+
+  /* ═══ Navegação ═══ */
+  const screens = { home: $("#scr-home"), sorteio: $("#scr-sorteio"), bolao: $("#scr-bolao"), nota: $("#scr-nota") };
+  let current = "home", navLock = false;
+
+  function goTo(name, back){
+    if(navLock || name === current) return;
+    navLock = true;
+    const from = screens[current], to = screens[name];
+    from.classList.add(back ? "out-r" : "out-l");
+    setTimeout(() => {
+      from.classList.remove("on", "out-r", "out-l");
+      to.classList.add("on", back ? "out-l" : "out-r");
+      void to.offsetHeight;
+      to.classList.remove("out-l", "out-r");
+      current = name;
+      navLock = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if(name === "bolao" || name === "nota") ensureBooks();
+    }, 220);
+  }
+  document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => goTo(b.dataset.go)));
+  document.querySelectorAll("[data-back]").forEach(b => { b.innerHTML = ICON.backA; b.addEventListener("click", () => goTo("home", true)); });
+
+  /* ═══ Segmented genérico ═══ */
+  function segment(root, onPick){
+    const segs = [...root.querySelectorAll(".seg")];
+    segs.forEach((b, i) => b.addEventListener("click", () => {
+      if(root.dataset.i === String(i)) return;
+      root.dataset.i = i;
+      segs.forEach((x, j) => x.setAttribute("aria-selected", i === j));
+      onPick(b, i);
+    }));
+  }
+
+  /* ═══ Livros (SheetDB) ═══ */
+  function renderSetup(){ $("#setupCard").hidden = !state.needsSetup; }
+
+  async function checkSheet(){
+    try { await api.keys(); state.needsSetup = false; }
+    catch(e){ /* needsSetup já tratado em req() */ }
+    renderSetup();
+  }
+
+  async function loadBooks(force){
+    if(state.booksLoaded && !force) return state.books;
+    const rows = await api.search({ tipo: "livro" });
+    state.books = (Array.isArray(rows) ? rows : [])
+      .map(r => (r.livro || "").trim()).filter(Boolean)
+      .filter((v, i, a) => a.indexOf(v) === i);
+    state.booksLoaded = true;
+    return state.books;
+  }
+
+  function fillSelect(sel, keep){
+    const prev = keep || sel.value;
+    sel.innerHTML = "";
+    if(!state.books.length){
+      sel.innerHTML = '<option value="">Nenhum livro cadastrado</option>';
+      sel.disabled = true;
+      return;
+    }
+    sel.disabled = false;
+    state.books.forEach(b => {
+      const o = document.createElement("option");
+      o.value = b; o.textContent = b;
+      sel.appendChild(o);
+    });
+    if(prev && state.books.includes(prev)) sel.value = prev;
+  }
+
+  async function ensureBooks(force){
+    const selects = [$("#selBolao"), $("#selNota")];
+    if(state.booksLoaded && !force){ selects.forEach(s => fillSelect(s)); return; }
+    selects.forEach(s => { s.innerHTML = '<option value="">Carregando…</option>'; s.disabled = true; });
+    try {
+      await loadBooks(true);
+      selects.forEach(s => fillSelect(s));
+    } catch(e){
+      selects.forEach(s => { s.innerHTML = '<option value="">Erro ao carregar</option>'; s.disabled = true; });
+      say(e.message, false);
+    }
+  }
+
+  async function registerBook(title, btn){
+    const name = title.trim();
+    if(!name) return false;
+    if(state.books.some(b => b.toLowerCase() === name.toLowerCase())){
+      say("“" + name + "” já está cadastrado.", false);
+      return false;
+    }
+    busy(btn, true, "Cadastrando…");
+    try {
+      await api.create([{ id: uid(), tipo: "livro", livro: name, membro: "", valor: "", acerto: "", data: new Date().toISOString() }]);
+      state.books.push(name);
+      state.booksLoaded = true;
+      [$("#selBolao"), $("#selNota")].forEach(s => fillSelect(s, name));
+      say("“" + name + "” cadastrado.");
+      return true;
+    } catch(e){
+      say(e.message, false);
+      return false;
+    } finally { busy(btn, false); }
+  }
+
+  /* ═══════════ SORTEIO ═══════════ */
+  const list = $("#list"), picks = $("#picks"), viewEdit = $("#viewEdit"), viewArena = $("#viewArena");
+  const btnGo = $("#btnGo"), goText = $("#goText"), btnBackDraw = $("#btnBackDraw");
+  const winnerBar = $("#winnerBar"), winnerName = $("#winnerName"), counter = $("#counter");
+  const btnSaveWinner = $("#btnSaveWinner");
+  btnBackDraw.innerHTML = ICON.undo;
+  $("#btnManual").innerHTML = ICON.save;
+  $("#btnReload").innerHTML = ICON.refr;
+  $("#btnCopyCols").innerHTML = ICON.copy;
+  const goIcon = () => btnGo.querySelector(".ci");
+
   function addRow(value = "", focus = false){
     const li = document.createElement("li");
     li.className = "row enter";
     li.innerHTML =
       '<div class="row-inner">' +
-        '<input class="field" type="text" maxlength="80" placeholder="Nome do livro" autocomplete="off" spellcheck="false">' +
+        '<input class="field" type="text" maxlength="120" placeholder="Nome do livro" autocomplete="off">' +
         '<button class="icon-btn" title="Remover" aria-label="Remover livro">' + ICON.trash + '</button>' +
       '</div>';
     const input = li.querySelector("input");
     input.value = value;
-    li.querySelector("button").addEventListener("click", () => removeRow(li));
+    li.querySelector("button").addEventListener("click", () => dropRow(li, list, addRow, syncGo));
     input.addEventListener("keydown", e => {
       if(e.key === "Enter"){ e.preventDefault(); addRow("", true); }
-      if(e.key === "Backspace" && !input.value && list.children.length > 1){
+      if(e.key === "Backspace" && !input.value && list.querySelectorAll(".row:not(.leaving)").length > 1){
         e.preventDefault();
         const prev = li.previousElementSibling;
-        removeRow(li);
+        dropRow(li, list, addRow, syncGo);
         if(prev) prev.querySelector("input").focus();
       }
     });
     input.addEventListener("input", syncGo);
     list.appendChild(li);
-    void li.offsetHeight;              // trava o estado inicial antes de animar
+    void li.offsetHeight;
     li.classList.remove("enter");
     if(focus) input.focus();
     syncGo();
   }
 
-  function removeRow(li){
-    if(li.classList.contains("leaving")) return;
-    if(list.querySelectorAll(".row:not(.leaving)").length === 1) addRow("", false);
-    li.classList.add("leaving");
+  function dropRow(el, parent, refill, after){
+    if(el.classList.contains("leaving")) return;
+    const kind = el.classList.contains("blk") ? ".blk" : ".row";
+    if(refill && parent.querySelectorAll(kind + ":not(.leaving)").length === 1) refill("", false);
+    el.classList.add("leaving");
     let gone = false;
-    const drop = () => { if(gone) return; gone = true; li.remove(); syncGo(); };
-    li.addEventListener("transitionend", e => { if(e.propertyName === "opacity") drop(); });
-    setTimeout(drop, 500);             // rede de segurança se a transição não disparar
-    syncGo();
+    const drop = () => { if(gone) return; gone = true; el.remove(); after && after(); };
+    el.addEventListener("transitionend", e => { if(e.propertyName === "opacity") drop(); });
+    setTimeout(drop, 520);
+    after && after();
   }
 
-  const names = () => [...list.querySelectorAll(".row:not(.leaving) input")]
-    .map(i => i.value.trim()).filter(Boolean);
+  const drawNames = () => [...list.querySelectorAll(".row:not(.leaving) input")].map(i => i.value.trim()).filter(Boolean);
+  function syncGo(){ if(state.phase === "edit") btnGo.disabled = drawNames().length < 2; }
 
-  function syncGo(){
-    if(phase !== "edit") return;
-    btnGo.disabled = names().length < 2;
-  }
-
-  /* ────────── Modo ────────── */
-  segmented.querySelectorAll(".seg").forEach(b => b.addEventListener("click", () => {
-    if(b.dataset.mode === mode) return;
-    mode = b.dataset.mode;
-    segmented.dataset.mode = mode;
-    segmented.querySelectorAll(".seg").forEach(x => x.setAttribute("aria-selected", x.dataset.mode === mode));
-    if(phase !== "edit") toEdit();
-    paintGo();
-  }));
+  segment($("#segMode"), b => {
+    state.mode = b.dataset.mode;
+    if(state.phase !== "edit") toEdit(); else paintGo();
+  });
 
   function paintGo(){
-    if(phase === "edit"){
-      goIcon.innerHTML = ICON.play;
-      goText.textContent = mode === "single" ? "Sortear" : "Iniciar eliminação";
-      btnGo.classList.remove("gold");
-      btnGo.title = goText.textContent;
-    } else if(phase === "elim"){
-      goIcon.innerHTML = ICON.bolt;
+    if(state.phase === "edit"){
+      goIcon().innerHTML = ICON.play;
+      goText.textContent = state.mode === "single" ? "Sortear" : "Iniciar eliminação";
+      btnGo.className = "cta";
+    } else if(state.phase === "elim"){
+      goIcon().innerHTML = ICON.bolt;
       goText.textContent = "Eliminar";
-      btnGo.classList.remove("gold");
-      btnGo.title = "Eliminar um livro";
-    } else if(phase === "done"){
-      goIcon.innerHTML = ICON.again;
+      btnGo.className = "cta";
+    } else if(state.phase === "done"){
+      goIcon().innerHTML = ICON.again;
       goText.textContent = "Sortear de novo";
-      btnGo.classList.add("gold");
-      btnGo.title = "Sortear de novo";
+      btnGo.className = "cta gold";
     }
+    btnGo.title = goText.textContent;
   }
 
-  /* ────────── Transição de views ────────── */
   function swap(hide, show, after){
-    hide.classList.add("out");
+    hide.classList.add("out-l");
     setTimeout(() => {
-      hide.hidden = true; hide.classList.remove("out");
-      show.hidden = false; show.classList.add("out");
+      hide.hidden = true; hide.classList.remove("out-l");
+      show.hidden = false; show.classList.add("out-r");
       void show.offsetHeight;
-      show.classList.remove("out");
+      show.classList.remove("out-r");
       after && after();
-    }, 240);
+    }, 230);
   }
 
-  /* ────────── Arena ────────── */
-  function buildPool(){
-    pool = names().map(name => {
+  const alive = () => state.pool.filter(p => !p.dead);
+  function updateCounter(){
+    const n = alive().length;
+    counter.textContent = state.phase === "done" ? "" : n + (n === 1 ? " livro na disputa" : " livros na disputa");
+  }
+
+  function startDraw(){
+    picks.innerHTML = "";
+    winnerBar.classList.remove("show");
+    btnSaveWinner.hidden = true;
+    state.pool = drawNames().map(name => {
       const li = document.createElement("li");
       li.className = "pick";
       li.innerHTML = '<span class="dot"></span><span class="nm"></span>';
@@ -469,49 +833,37 @@
       picks.appendChild(li);
       return { name, el: li, dead: false };
     });
-  }
-
-  function alive(){ return pool.filter(p => !p.dead); }
-
-  function updateCounter(){
-    const n = alive().length;
-    counter.textContent = phase === "done" ? "" : n + (n === 1 ? " livro na disputa" : " livros na disputa");
-  }
-
-  function start(){
-    picks.innerHTML = "";
-    winnerBar.classList.remove("show");
-    buildPool();
-    btnBack.style.visibility = "visible";
+    btnBackDraw.style.visibility = "visible";
     swap(viewEdit, viewArena, () => {
-      if(mode === "single"){ phase = "spin"; paintGo(); spin(); }
-      else { phase = "elim"; paintGo(); updateCounter(); }
+      if(state.mode === "single"){ state.phase = "spin"; paintGo(); spin(); }
+      else { state.phase = "elim"; paintGo(); updateCounter(); }
     });
   }
 
   function toEdit(){
-    phase = "edit";
-    btnBack.style.visibility = "hidden";
+    state.phase = "edit";
+    btnBackDraw.style.visibility = "hidden";
     btnGo.disabled = false;
+    btnSaveWinner.hidden = true;
     paintGo();
     swap(viewArena, viewEdit, () => { picks.innerHTML = ""; syncGo(); });
   }
 
-  function restart(){
-    pool.forEach(p => { p.dead = false; p.el.classList.remove("dead","win","spot"); });
+  function restartDraw(){
+    state.pool.forEach(p => { p.dead = false; p.el.classList.remove("dead", "win", "spot"); });
     winnerBar.classList.remove("show");
-    if(mode === "single"){ phase = "spin"; paintGo(); spin(); }
-    else { phase = "elim"; paintGo(); updateCounter(); }
+    btnSaveWinner.hidden = true;
+    if(state.mode === "single"){ state.phase = "spin"; paintGo(); spin(); }
+    else { state.phase = "elim"; paintGo(); updateCounter(); }
   }
 
-  /* Modo 1 — roleta e vencedor direto */
   function spin(){
     btnGo.disabled = true;
     counter.textContent = "Sorteando…";
+    const pool = state.pool;
     const winner = pool[rand(pool.length)];
     const total = pool.length * 4 + rand(pool.length);
     let i = 0, step = 0;
-
     (function tick(){
       pool.forEach(p => p.el.classList.remove("spot"));
       pool[i % pool.length].el.classList.add("spot");
@@ -526,12 +878,10 @@
         }, 320);
         return;
       }
-      const t = Math.min(step / total, 1);
-      setTimeout(tick, 55 + Math.pow(t, 3) * 260);
+      setTimeout(tick, 55 + Math.pow(Math.min(step / total, 1), 3) * 260);
     })();
   }
 
-  /* Modo 2 — eliminação por clique */
   function eliminate(){
     const left = alive();
     if(left.length <= 1) return;
@@ -544,58 +894,279 @@
       victim.el.classList.add("dead");
       updateCounter();
       const rest = alive();
-      if(rest.length === 1){ setTimeout(() => declare(rest[0]), 420); }
-      else { btnGo.disabled = false; }
+      if(rest.length === 1) setTimeout(() => declare(rest[0]), 420);
+      else btnGo.disabled = false;
     }, 260);
   }
 
   function declare(winner){
-    phase = "done";
+    state.phase = "done";
     winner.el.classList.add("win");
     winnerName.textContent = winner.name;
     winnerBar.classList.add("show");
     counter.textContent = "";
     btnGo.disabled = false;
+    btnSaveWinner.hidden = false;
+    btnSaveWinner.querySelector(".ci").innerHTML = ICON.save;
     paintGo();
     confetti();
   }
 
-  /* ────────── Botões ────────── */
   btnGo.addEventListener("click", () => {
-    if(phase === "edit"){
-      if(names().length < 2){
-        btnGo.classList.add("shake");
-        setTimeout(() => btnGo.classList.remove("shake"), 450);
-        return;
-      }
-      start();
+    if(state.phase === "edit"){
+      if(drawNames().length < 2){ shake(btnGo); say("Adicione ao menos 2 livros.", false); return; }
+      startDraw();
     }
-    else if(phase === "elim") eliminate();
-    else if(phase === "done") restart();
+    else if(state.phase === "elim") eliminate();
+    else if(state.phase === "done") restartDraw();
   });
-  btnBack.addEventListener("click", toEdit);
+  btnBackDraw.addEventListener("click", toEdit);
   $("#btnAdd").addEventListener("click", () => addRow("", true));
 
-  const rand = n => Math.floor(Math.random() * n);
+  btnSaveWinner.addEventListener("click", async () => {
+    if(await registerBook(winnerName.textContent, btnSaveWinner)) btnSaveWinner.hidden = true;
+  });
 
-  /* ────────── Confete ────────── */
+  const manualInput = $("#manualBook"), btnManual = $("#btnManual");
+  async function manualSave(){
+    if(!manualInput.value.trim()){ shake(manualInput); return; }
+    if(await registerBook(manualInput.value, btnManual)) manualInput.value = "";
+  }
+  btnManual.addEventListener("click", manualSave);
+  manualInput.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); manualSave(); } });
+
+  /* ═══════════ BOLÃO ═══════════ */
+  const betList = $("#betList"), selBolao = $("#selBolao"), betsBox = $("#betsBox");
+
+  function addBet(focus){
+    const li = document.createElement("li");
+    li.className = "blk enter";
+    li.innerHTML =
+      '<div class="blk-inner"><div class="blk-box">' +
+        '<div class="blk-top">' +
+          '<span class="blk-n"></span>' +
+          '<input class="field nome" type="text" maxlength="60" placeholder="Nome do membro" autocomplete="off">' +
+          '<button class="icon-btn" title="Remover" aria-label="Remover membro">' + ICON.trash + '</button>' +
+        '</div>' +
+        '<textarea class="field palpite" maxlength="500" placeholder="Palpite para o final…"></textarea>' +
+      '</div></div>';
+    li.querySelector("button").addEventListener("click", () => dropRow(li, betList, addBet, numberBets));
+    li.querySelectorAll(".field").forEach(f => f.addEventListener("input", () => f.classList.remove("bad")));
+    betList.appendChild(li);
+    void li.offsetHeight;
+    li.classList.remove("enter");
+    numberBets();
+    if(focus) li.querySelector(".nome").focus();
+  }
+  function numberBets(){
+    [...betList.querySelectorAll(".blk:not(.leaving)")].forEach((b, i) => b.querySelector(".blk-n").textContent = i + 1);
+  }
+  $("#btnAddBet").addEventListener("click", () => addBet(true));
+
+  segment($("#segBolao"), (b, i) => {
+    $("#tabSend").hidden = i !== 0;
+    $("#tabView").hidden = i !== 1;
+    if(i === 1 && !betsBox.dataset.loaded) emptyBox(betsBox, "Toque em carregar para ver os palpites deste livro.");
+  });
+
+  $("#btnSendBets").addEventListener("click", async e => {
+    const btn = e.currentTarget;
+    const livro = selBolao.value;
+    if(!livro){ shake(btn); say("Cadastre e selecione um livro primeiro.", false); return; }
+
+    const blocks = [...betList.querySelectorAll(".blk:not(.leaving)")];
+    const rows = [];
+    let bad = false;
+    blocks.forEach(b => {
+      const nome = b.querySelector(".nome"), pal = b.querySelector(".palpite");
+      const n = nome.value.trim(), p = pal.value.trim();
+      if(!n && !p) return;
+      if(!n || !p){
+        bad = true;
+        if(!n) nome.classList.add("bad");
+        if(!p) pal.classList.add("bad");
+        return;
+      }
+      rows.push({ id: uid(), tipo: "palpite", livro, membro: n, valor: p, acerto: "", data: new Date().toISOString() });
+    });
+
+    if(bad){ shake(btn); say("Complete os blocos destacados.", false); return; }
+    if(!rows.length){ shake(btn); say("Preencha ao menos um palpite.", false); return; }
+
+    busy(btn, true, "Enviando…");
+    try {
+      await api.create(rows);
+      say(rows.length + (rows.length === 1 ? " palpite enviado." : " palpites enviados."));
+      betList.innerHTML = "";
+      addBet(false);
+      betsBox.dataset.loaded = "";
+    } catch(err){ say(err.message, false); }
+    finally { busy(btn, false); }
+  });
+
+  async function loadBets(btn){
+    const livro = selBolao.value;
+    if(!livro){ say("Selecione um livro.", false); return; }
+    if(btn) busy(btn, true, "Carregando…");
+    loadingBox(betsBox, "Buscando palpites…");
+    try {
+      const rows = await api.search({ tipo: "palpite", livro });
+      const arr = Array.isArray(rows) ? rows : [];
+      arr.sort((a, b) => String(a.data || "").localeCompare(String(b.data || "")));
+      betsBox.dataset.loaded = "1";
+      if(!arr.length){ emptyBox(betsBox, "Nenhum palpite registrado para “" + livro + "” ainda."); return; }
+      betsBox.innerHTML = "";
+      arr.forEach(r => betsBox.appendChild(betItem(r)));
+    } catch(e){
+      emptyBox(betsBox, e.message, ICON.warn);
+      say(e.message, false);
+    } finally { if(btn) busy(btn, false); }
+  }
+
+  function betItem(r){
+    const done = String(r.acerto) === "1";
+    const el = document.createElement("div");
+    el.className = "item" + (done ? " done" : "");
+    el.innerHTML =
+      '<button class="check" title="Marcar acerto" aria-label="Marcar acerto">' + ICON.check + '</button>' +
+      '<div class="bd"><div class="who"></div><div class="guess"></div></div>';
+    el.querySelector(".who").textContent = r.membro || "—";
+    el.querySelector(".guess").textContent = r.valor || "";
+    const chk = el.querySelector(".check");
+    chk.setAttribute("aria-pressed", done);
+
+    chk.addEventListener("click", async () => {
+      if(chk.classList.contains("busy")) return;
+      if(!r.id){ say("Este palpite não tem id — recadastre para poder marcar.", false); return; }
+      const next = !el.classList.contains("done");
+      el.classList.toggle("done", next);          // otimista
+      chk.classList.add("busy");
+      try {
+        await api.update(r.id, { acerto: next ? "1" : "" });
+        r.acerto = next ? "1" : "";
+        chk.setAttribute("aria-pressed", next);
+      } catch(e){
+        el.classList.toggle("done", !next);       // desfaz
+        say(e.message, false);
+      } finally { chk.classList.remove("busy"); }
+    });
+    return el;
+  }
+
+  $("#btnLoadBets").addEventListener("click", e => loadBets(e.currentTarget));
+  $("#btnReload").addEventListener("click", () => loadBets(null));
+  selBolao.addEventListener("change", () => { betsBox.dataset.loaded = ""; if(!$("#tabView").hidden) loadBets(null); });
+
+  /* ═══════════ AVALIAÇÃO ═══════════ */
+  const rateList = $("#rateList"), selNota = $("#selNota");
+
+  function addRate(focus){
+    const li = document.createElement("li");
+    li.className = "blk enter";
+    li.innerHTML =
+      '<div class="blk-inner"><div class="blk-box">' +
+        '<div class="blk-top">' +
+          '<span class="blk-n"></span>' +
+          '<input class="field nome" type="text" maxlength="60" placeholder="Nome do membro" autocomplete="off">' +
+          '<button class="icon-btn" title="Remover" aria-label="Remover membro">' + ICON.trash + '</button>' +
+        '</div>' +
+        '<div class="stars" role="group" aria-label="Nota de 1 a 10"><span class="score">—</span></div>' +
+      '</div></div>';
+
+    const stars = li.querySelector(".stars"), score = li.querySelector(".score");
+    for(let n = 1; n <= 10; n++){
+      const b = document.createElement("button");
+      b.className = "star"; b.dataset.n = n;
+      b.title = "Nota " + n; b.setAttribute("aria-label", "Nota " + n);
+      b.innerHTML = ICON.star;
+      b.addEventListener("click", () => setScore(li, li.dataset.nota === String(n) ? 0 : n));
+      stars.insertBefore(b, score);
+    }
+    li.querySelector("button.icon-btn").addEventListener("click", () => dropRow(li, rateList, addRate, numberRates));
+    li.querySelector(".nome").addEventListener("input", e => e.target.classList.remove("bad"));
+    rateList.appendChild(li);
+    void li.offsetHeight;
+    li.classList.remove("enter");
+    numberRates();
+    if(focus) li.querySelector(".nome").focus();
+  }
+
+  function setScore(li, n){
+    li.dataset.nota = n || "";
+    li.querySelectorAll(".star").forEach(s => s.classList.toggle("lit", n > 0 && +s.dataset.n <= n));
+    const score = li.querySelector(".score");
+    score.textContent = n ? n + "/10" : "—";
+    score.classList.toggle("set", !!n);
+    li.querySelector(".stars").classList.remove("bad");
+  }
+  function numberRates(){
+    [...rateList.querySelectorAll(".blk:not(.leaving)")].forEach((b, i) => b.querySelector(".blk-n").textContent = i + 1);
+  }
+  $("#btnAddRate").addEventListener("click", () => addRate(true));
+
+  $("#btnSendRates").addEventListener("click", async e => {
+    const btn = e.currentTarget;
+    const livro = selNota.value;
+    if(!livro){ shake(btn); say("Cadastre e selecione um livro primeiro.", false); return; }
+
+    const blocks = [...rateList.querySelectorAll(".blk:not(.leaving)")];
+    const rows = [];
+    let bad = false;
+    blocks.forEach(b => {
+      const nome = b.querySelector(".nome");
+      const n = nome.value.trim(), nota = b.dataset.nota;
+      if(!n && !nota) return;
+      if(!n || !nota){
+        bad = true;
+        if(!n) nome.classList.add("bad");
+        if(!nota) shake(b.querySelector(".stars"));
+        return;
+      }
+      rows.push({ id: uid(), tipo: "nota", livro, membro: n, valor: nota, acerto: "", data: new Date().toISOString() });
+    });
+
+    if(bad){ shake(btn); say("Falta o nome ou a nota em algum bloco.", false); return; }
+    if(!rows.length){ shake(btn); say("Preencha ao menos uma nota.", false); return; }
+
+    busy(btn, true, "Enviando…");
+    try {
+      await api.create(rows);
+      const media = (rows.reduce((s, r) => s + (+r.valor), 0) / rows.length).toFixed(1);
+      say(rows.length + (rows.length === 1 ? " nota enviada." : " notas enviadas.") + " Média " + media + ".");
+      rateList.innerHTML = "";
+      addRate(false);
+    } catch(err){ say(err.message, false); }
+    finally { busy(btn, false); }
+  });
+
+  /* ═══ Setup ═══ */
+  $("#btnCopyCols").addEventListener("click", async () => {
+    const header = ["id","tipo","livro","membro","valor","acerto","data"].join("\t");
+    try { await navigator.clipboard.writeText(header); say("Cabeçalho copiado."); }
+    catch(e){ say("Copie manualmente: " + header.replace(/\t/g, ", "), false); }
+  });
+  $("#btnRecheck").addEventListener("click", async e => {
+    const btn = e.currentTarget;
+    busy(btn, true, "Verificando…");
+    await checkSheet();
+    busy(btn, false);
+    if(state.needsSetup) say("A planilha ainda está sem cabeçalho.", false);
+    else { say("Planilha pronta."); await ensureBooks(true); }
+  });
+
+  /* ═══ Confete ═══ */
   const cv = $("#confetti"), ctx = cv.getContext("2d");
-  let parts = [], raf = 0;
+  let raf = 0;
   function confetti(){
     const dpr = Math.min(devicePixelRatio || 1, 2);
     cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const colors = ["#0a84ff","#ffb340","#30d158","#ff375f","#bf5af2","#64d2ff"];
-    parts = Array.from({length: 130}, () => ({
-      x: innerWidth / 2 + (Math.random() - .5) * 220,
-      y: innerHeight * .34,
-      vx: (Math.random() - .5) * 11,
-      vy: -8 - Math.random() * 9,
-      s: 4 + Math.random() * 6,
-      r: Math.random() * Math.PI,
-      vr: (Math.random() - .5) * .3,
-      c: colors[rand(colors.length)],
-      life: 1
+    const parts = Array.from({ length: 130 }, () => ({
+      x: innerWidth / 2 + (Math.random() - .5) * 220, y: innerHeight * .34,
+      vx: (Math.random() - .5) * 11, vy: -8 - Math.random() * 9,
+      s: 4 + Math.random() * 6, r: Math.random() * Math.PI, vr: (Math.random() - .5) * .3,
+      c: colors[rand(colors.length)], life: 1
     }));
     cancelAnimationFrame(raf);
     (function loop(){
@@ -618,10 +1189,14 @@
     })();
   }
 
-  /* ────────── Início ────────── */
-  ["", "", ""].forEach(v => addRow(v));
+  /* ═══ Boot ═══ */
+  [0,1,2].forEach(() => addRow(""));
+  addBet(false);
+  addRate(false);
   paintGo();
   syncGo();
+  emptyBox(betsBox, "Toque em carregar para ver os palpites deste livro.");
+  checkSheet();
 })();
 </script>
 </body>
