@@ -40,6 +40,7 @@
   }
 
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none !important}   /* .tile/.cta usam display:flex e venceriam o padrão do navegador */
   html,body{height:100%}
   body{
     margin:0;font-size:17px;color:var(--text);
@@ -338,6 +339,47 @@
     font-size:13px;font-weight:600;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.01em;
   }
 
+  /* ── Barra superior / engrenagem ── */
+  .topbar{display:flex;justify-content:flex-end;margin-bottom:2px;min-height:40px}
+  .gear{
+    width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+    background:var(--card);border:.5px solid var(--hair);box-shadow:var(--shadow-s);color:var(--text-2);
+    -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+    transition:transform .3s var(--spring),color .2s,background .2s;
+  }
+  .gear:hover{color:var(--text)}
+  .gear:hover svg{transform:rotate(60deg)}
+  .gear:active{transform:scale(.9)}
+  .gear svg{transition:transform .5s var(--ease)}
+
+  .hint{margin:10px 4px 2px;font-size:13px;color:var(--text-2);line-height:1.5;letter-spacing:-.005em}
+  .hint code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;overflow-wrap:anywhere}
+
+  .tile.warn{
+    width:100%;border-color:rgba(232,144,29,.35);
+    background:linear-gradient(135deg,rgba(255,179,64,.16),rgba(255,179,64,.05));
+  }
+  .tile.warn .ic{background:linear-gradient(160deg,#ffc76b,#e8901d)}
+
+  .cta.ok{background:linear-gradient(165deg,#34d95f,#1f9d43);box-shadow:0 8px 26px rgba(52,199,89,.34);color:#fff}
+
+  /* ── Nota média ── */
+  .avg{display:flex;flex-direction:column;align-items:center;gap:9px;padding:16px 8px 12px}
+  .avg-n{display:flex;align-items:baseline;gap:2px;font-variant-numeric:tabular-nums}
+  .avg-v{font-size:clamp(52px,15vw,68px);font-weight:700;letter-spacing:-.045em;line-height:1;
+    background:linear-gradient(160deg,#ffc76b,#e8901d);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .avg-d{font-size:20px;font-weight:600;color:var(--text-3);letter-spacing:-.02em}
+  .avg-c{font-size:13.5px;color:var(--text-2);letter-spacing:-.006em}
+
+  .stars.ro{pointer-events:none;gap:1.5px;padding:0}
+  .stars.ro .star{width:15px;height:15px}
+  .stars.ro.big .star{width:19px;height:19px}
+  .grade{
+    flex:none;font-size:17px;font-weight:680;color:var(--gold);
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em;padding-left:6px;
+  }
+  .item.mid{align-items:center}
+
   #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:150}
   .shake{animation:shake .42s}
 
@@ -358,6 +400,14 @@
 
   <!-- ══ HOME ══ -->
   <section class="screen on" id="scr-home">
+    <div class="topbar">
+      <button class="gear" data-go="config" title="Configurações" aria-label="Configurações">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3.2"/>
+          <path d="M19.4 14.4a1.6 1.6 0 0 0 .32 1.77l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.6 1.6 0 0 0-1.77-.32 1.6 1.6 0 0 0-.97 1.47V20a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1.05-1.47 1.6 1.6 0 0 0-1.77.32l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.6 1.6 0 0 0 .32-1.77 1.6 1.6 0 0 0-1.47-.97H4a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.47-1.05 1.6 1.6 0 0 0-.32-1.77l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.6 1.6 0 0 0 1.77.32H10a1.6 1.6 0 0 0 .97-1.47V4a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 .97 1.47 1.6 1.6 0 0 0 1.77-.32l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.6 1.6 0 0 0-.32 1.77V10a1.6 1.6 0 0 0 1.47.97H20a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.47.97z"/>
+        </svg>
+      </button>
+    </div>
     <div class="hero">
       <div class="badge">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -368,6 +418,16 @@
       <h1>Clube do Livro</h1>
       <p class="sub">Sorteie, aposte e avalie as leituras do grupo.</p>
     </div>
+
+    <button class="tile warn" id="apiCard" data-go="config" hidden style="margin-bottom:14px">
+      <span class="ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.5 14.5 6.8 17.2a3.8 3.8 0 0 1-5.4-5.4L4.1 9.1"/><path d="m14.5 9.5 2.7-2.7a3.8 3.8 0 0 1 5.4 5.4l-2.7 2.7"/><path d="m9 15 6-6"/>
+        </svg>
+      </span>
+      <span class="tx"><span class="tt">Conecte sua API</span><span class="ds">Toque para informar a URL nas configurações</span></span>
+      <span class="ch"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+    </button>
 
     <div class="card setup" id="setupCard" hidden>
       <h3>Configure a planilha</h3>
@@ -418,9 +478,30 @@
     </div>
   </section>
 
+  <!-- ══ CONFIGURAÇÕES ══ -->
+  <section class="screen" id="scr-config">
+    <div class="navbar"><button class="back" data-back title="Voltar" aria-label="Voltar"></button><h2>Configurações</h2></div>
+
+    <div class="card">
+      <div class="label">URL da API</div>
+      <input class="field" id="apiInput" type="url" inputmode="url" spellcheck="false" autocomplete="off"
+             autocapitalize="off" placeholder="https://…" aria-label="URL da API">
+      <p class="hint">Cole o endpoint da sua planilha. Fica salvo apenas neste navegador (<code>localStorage</code>) e nunca aparece no código-fonte.</p>
+    </div>
+
+    <button class="cta" id="btnSaveApi"><span class="ci"></span><span>Salvar</span></button>
+
+    <div class="card" id="apiState" style="margin-top:14px"></div>
+  </section>
+
   <!-- ══ SORTEIO ══ -->
   <section class="screen" id="scr-sorteio">
     <div class="navbar"><button class="back" data-back title="Voltar" aria-label="Voltar"></button><h2>Sorteio</h2></div>
+    <button class="tile warn notice" data-go="config" hidden style="margin-bottom:14px">
+      <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></svg></span>
+      <span class="tx"><span class="tt">API não configurada</span><span class="ds">Informe a URL para cadastrar livros</span></span>
+      <span class="ch"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+    </button>
 
     <div class="card" id="viewEdit">
       <ul id="list"></ul>
@@ -479,6 +560,11 @@
   <!-- ══ BOLÃO ══ -->
   <section class="screen" id="scr-bolao">
     <div class="navbar"><button class="back" data-back title="Voltar" aria-label="Voltar"></button><h2>Bolão</h2></div>
+    <button class="tile warn notice" data-go="config" hidden style="margin-bottom:14px">
+      <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></svg></span>
+      <span class="tx"><span class="tt">API não configurada</span><span class="ds">Informe a URL para enviar e consultar palpites</span></span>
+      <span class="ch"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+    </button>
 
     <div class="card">
       <div class="label">Livro ativo</div>
@@ -519,6 +605,11 @@
   <!-- ══ AVALIAÇÃO ══ -->
   <section class="screen" id="scr-nota">
     <div class="navbar"><button class="back" data-back title="Voltar" aria-label="Voltar"></button><h2>Avaliação</h2></div>
+    <button class="tile warn notice" data-go="config" hidden style="margin-bottom:14px">
+      <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></svg></span>
+      <span class="tx"><span class="tt">API não configurada</span><span class="ds">Informe a URL para enviar e consultar notas</span></span>
+      <span class="ch"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+    </button>
 
     <div class="card">
       <div class="label">Livro ativo</div>
@@ -528,12 +619,35 @@
       </div>
     </div>
 
-    <div class="card"><ul id="rateList"></ul>
-      <button class="add" id="btnAddRate" title="Adicionar membro" aria-label="Adicionar membro">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    <div class="segmented" id="segNota" data-n="2" data-i="0" role="tablist">
+      <span class="thumb" aria-hidden="true"></span>
+      <button class="seg" role="tab" data-tab="rate" aria-selected="true" title="Registrar notas">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m12 3.6 2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 17l-5.25 2.75 1-5.85L3.5 9.75l5.9-.85z"/></svg>Registrar
+      </button>
+      <button class="seg" role="tab" data-tab="scores" aria-selected="false" title="Consultar notas">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 20V13M12 20V4.5M19.5 20v-9.5"/></svg>Consultar
       </button>
     </div>
-    <button class="cta purple" id="btnSendRates"><span class="ci"></span><span>Enviar notas</span></button>
+
+    <div id="tabRate">
+      <div class="card"><ul id="rateList"></ul>
+        <button class="add" id="btnAddRate" title="Adicionar membro" aria-label="Adicionar membro">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <button class="cta purple" id="btnSendRates"><span class="ci"></span><span>Enviar notas</span></button>
+    </div>
+
+    <div id="tabScores" hidden>
+      <div class="card" id="avgCard" hidden>
+        <div class="avg">
+          <div class="avg-n"><span class="avg-v" id="avgVal">—</span><span class="avg-d">/10</span></div>
+          <div class="stars ro big" id="avgStars"></div>
+          <div class="avg-c" id="avgCount"></div>
+        </div>
+      </div>
+      <div class="card" id="scoresBox"></div>
+    </div>
   </section>
 
 </div>
@@ -542,7 +656,7 @@
 (() => {
   "use strict";
 
-  const API = "https://sheetdb.io/api/v1/l7y6pld7widpu";
+  const LS_KEY = "clubedolivro.apiUrl";
   const $ = s => document.querySelector(s);
   const rand = n => Math.floor(Math.random() * n);
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -570,17 +684,51 @@
   /* ═══ Estado ═══ */
   const state = { books: [], booksLoaded: false, needsSetup: false, mode: "single", phase: "edit", pool: [] };
 
+  /* ═══ Credencial da API (localStorage) ═══ */
+  let memUrl = "";                                   // usado se o localStorage estiver bloqueado
+  function getApi(){
+    try { return (localStorage.getItem(LS_KEY) || "").trim(); }
+    catch(e){ return memUrl; }
+  }
+  function setApi(url){
+    memUrl = url;
+    try { url ? localStorage.setItem(LS_KEY, url) : localStorage.removeItem(LS_KEY); return true; }
+    catch(e){ return false; }
+  }
+  function normalizeUrl(raw){
+    const v = String(raw || "").trim().replace(/\/+$/, "");
+    if(!v) return null;
+    let u;
+    try { u = new URL(v); } catch(e){ return null; }
+    if(u.protocol !== "https:" && u.protocol !== "http:") return null;
+    return v;
+  }
+
+  const NO_API = "Configure a URL da API em Configurações.";
+  function noApiError(){ const e = new Error(NO_API); e.noApi = true; return e; }
+
+  /** Bloqueia a ação quando não há URL salva e dá o aviso visual. */
+  function guardApi(btn){
+    if(getApi()) return true;
+    if(btn) shake(btn);
+    say(NO_API, false);
+    renderNotices();
+    return false;
+  }
+
   /* ═══ API ═══ */
   const EMPTY_SHEET = /spreadsheet is empty/i;
 
   async function req(path, opts){
+    const base = getApi();
+    if(!base) throw noApiError();
     let res;
-    try { res = await fetch(API + path, opts); }
+    try { res = await fetch(base + path, opts); }
     catch(e){ throw new Error("Sem conexão com a planilha."); }
     let body = null;
     try { body = await res.json(); } catch(e){}
     const msg = body && body.error;
-    if(msg && EMPTY_SHEET.test(msg)){ state.needsSetup = true; renderSetup(); throw new Error("Planilha sem cabeçalho — veja a tela inicial."); }
+    if(msg && EMPTY_SHEET.test(msg)){ state.needsSetup = true; renderNotices(); throw new Error("Planilha sem cabeçalho — veja a tela inicial."); }
     if(!res.ok) throw new Error(msg || ("Erro " + res.status + " na planilha."));
     if(msg) throw new Error(msg);
     return body;
@@ -625,12 +773,16 @@
   function shake(el){ el.classList.add("shake"); setTimeout(() => el.classList.remove("shake"), 450); }
 
   /* ═══ Navegação ═══ */
-  const screens = { home: $("#scr-home"), sorteio: $("#scr-sorteio"), bolao: $("#scr-bolao"), nota: $("#scr-nota") };
+  const screens = {
+    home: $("#scr-home"), config: $("#scr-config"), sorteio: $("#scr-sorteio"),
+    bolao: $("#scr-bolao"), nota: $("#scr-nota")
+  };
   let current = "home", navLock = false;
 
   function goTo(name, back){
     if(navLock || name === current) return;
     navLock = true;
+    if(name === "config") openConfig();              // pré-preenche antes de entrar
     const from = screens[current], to = screens[name];
     from.classList.add(back ? "out-r" : "out-l");
     setTimeout(() => {
@@ -659,12 +811,18 @@
   }
 
   /* ═══ Livros (SheetDB) ═══ */
-  function renderSetup(){ $("#setupCard").hidden = !state.needsSetup; }
+  function renderNotices(){
+    const has = !!getApi();
+    $("#apiCard").hidden = has;
+    $("#setupCard").hidden = !(has && state.needsSetup);
+    document.querySelectorAll(".notice").forEach(n => n.hidden = has);
+  }
 
   async function checkSheet(){
+    if(!getApi()){ state.needsSetup = false; renderNotices(); return; }
     try { await api.keys(); state.needsSetup = false; }
     catch(e){ /* needsSetup já tratado em req() */ }
-    renderSetup();
+    renderNotices();
   }
 
   async function loadBooks(force){
@@ -696,6 +854,12 @@
 
   async function ensureBooks(force){
     const selects = [$("#selBolao"), $("#selNota")];
+    if(!getApi()){
+      state.booksLoaded = false;
+      selects.forEach(s => { s.innerHTML = '<option value="">Configure a API</option>'; s.disabled = true; });
+      renderNotices();
+      return;
+    }
     if(state.booksLoaded && !force){ selects.forEach(s => fillSelect(s)); return; }
     selects.forEach(s => { s.innerHTML = '<option value="">Carregando…</option>'; s.disabled = true; });
     try {
@@ -710,6 +874,7 @@
   async function registerBook(title, btn){
     const name = title.trim();
     if(!name) return false;
+    if(!guardApi(btn)) return false;
     if(state.books.some(b => b.toLowerCase() === name.toLowerCase())){
       say("“" + name + "” já está cadastrado.", false);
       return false;
@@ -971,6 +1136,7 @@
 
   $("#btnSendBets").addEventListener("click", async e => {
     const btn = e.currentTarget;
+    if(!guardApi(btn)) return;
     const livro = selBolao.value;
     if(!livro){ shake(btn); say("Cadastre e selecione um livro primeiro.", false); return; }
 
@@ -1005,6 +1171,7 @@
   });
 
   async function loadBets(btn){
+    if(!guardApi(btn)) return;
     const livro = selBolao.value;
     if(!livro){ say("Selecione um livro.", false); return; }
     if(btn) busy(btn, true, "Carregando…");
@@ -1106,6 +1273,7 @@
 
   $("#btnSendRates").addEventListener("click", async e => {
     const btn = e.currentTarget;
+    if(!guardApi(btn)) return;
     const livro = selNota.value;
     if(!livro){ shake(btn); say("Cadastre e selecione um livro primeiro.", false); return; }
 
@@ -1135,9 +1303,150 @@
       say(rows.length + (rows.length === 1 ? " nota enviada." : " notas enviadas.") + " Média " + media + ".");
       rateList.innerHTML = "";
       addRate(false);
+      scoresBox.dataset.loaded = "";                 // consulta precisa recarregar
     } catch(err){ say(err.message, false); }
     finally { busy(btn, false); }
   });
+
+  /* ═══ Consultar notas ═══ */
+  const scoresBox = $("#scoresBox"), avgCard = $("#avgCard");
+
+  /** Fileira de 10 estrelas somente-leitura, acesa até `n`. */
+  function starRow(n, big){
+    let html = '<div class="stars ro' + (big ? " big" : "") + '" aria-label="Nota ' + n + ' de 10">';
+    for(let i = 1; i <= 10; i++) html += '<span class="star' + (i <= n ? " lit" : "") + '">' + ICON.star + '</span>';
+    return html + "</div>";
+  }
+
+  function resetScores(){
+    avgCard.hidden = true;
+    scoresBox.dataset.loaded = "";
+    emptyBox(scoresBox, "Selecione um livro para ver as notas do grupo.");
+  }
+
+  let scoresToken = 0;
+  async function loadScores(){
+    if(!getApi()){ avgCard.hidden = true; emptyBox(scoresBox, NO_API, ICON.warn); renderNotices(); return; }
+    const livro = selNota.value;
+    if(!livro){ resetScores(); return; }
+
+    avgCard.hidden = true;
+    loadingBox(scoresBox, "Buscando notas…");
+    const token = ++scoresToken;
+    try {
+      const rows = await api.search({ tipo: "nota", livro });
+      if(token !== scoresToken) return;              // seleção mudou durante a busca
+      const arr = (Array.isArray(rows) ? rows : [])
+        .map(r => ({ membro: (r.membro || "—"), nota: Number(r.valor), data: String(r.data || "") }))
+        .filter(r => Number.isFinite(r.nota) && r.nota > 0);
+      scoresBox.dataset.loaded = "1";
+
+      if(!arr.length){
+        emptyBox(scoresBox, "“" + livro + "” ainda não recebeu nenhuma avaliação.");
+        return;
+      }
+
+      const media = arr.reduce((s, r) => s + r.nota, 0) / arr.length;
+      $("#avgVal").textContent = media.toFixed(1).replace(".", ",");
+      $("#avgStars").innerHTML = "";
+      for(let i = 1; i <= 10; i++){
+        const s = document.createElement("span");
+        s.className = "star" + (i <= Math.round(media) ? " lit" : "");
+        s.innerHTML = ICON.star;
+        $("#avgStars").appendChild(s);
+      }
+      $("#avgCount").textContent = arr.length + (arr.length === 1 ? " avaliação" : " avaliações");
+      avgCard.hidden = false;
+
+      arr.sort((a, b) => b.nota - a.nota || a.membro.localeCompare(b.membro, "pt-BR"));
+      scoresBox.innerHTML = "";
+      arr.forEach(r => {
+        const el = document.createElement("div");
+        el.className = "item mid";
+        el.innerHTML = '<div class="bd"><div class="who"></div>' + starRow(r.nota) + '</div><div class="grade"></div>';
+        el.querySelector(".who").textContent = r.membro;
+        el.querySelector(".grade").textContent = r.nota;
+        scoresBox.appendChild(el);
+      });
+    } catch(e){
+      if(token !== scoresToken) return;
+      avgCard.hidden = true;
+      emptyBox(scoresBox, e.message, ICON.warn);
+      if(!e.noApi) say(e.message, false);
+    }
+  }
+
+  segment($("#segNota"), (b, i) => {
+    $("#tabRate").hidden = i !== 0;
+    $("#tabScores").hidden = i !== 1;
+    if(i === 1 && !scoresBox.dataset.loaded) loadScores();
+  });
+
+  selNota.addEventListener("change", () => {
+    scoresBox.dataset.loaded = "";
+    if(!$("#tabScores").hidden) loadScores();        // GET ao escolher a obra
+  });
+
+  /* ═══════════ CONFIGURAÇÕES ═══════════ */
+  const apiInput = $("#apiInput"), btnSaveApi = $("#btnSaveApi"), apiState = $("#apiState");
+
+  function openConfig(){
+    apiInput.value = getApi();                       // pré-preenche com o que está salvo
+    apiInput.classList.remove("bad");
+    paintApiState();
+  }
+
+  function paintApiState(){
+    const url = getApi();
+    if(!url){
+      emptyBox(apiState, "Nenhuma URL salva. As áreas de Sorteio, Bolão e Avaliação ficam bloqueadas até você informar o endpoint.", ICON.warn);
+      return;
+    }
+    apiState.innerHTML =
+      '<div class="item mid done"><span class="check" style="pointer-events:none">' + ICON.check + '</span>' +
+      '<div class="bd"><div class="who">Conectado</div><div class="guess"></div></div></div>';
+    apiState.querySelector(".guess").textContent = url;
+  }
+
+  /** Pisca o botão em verde com um check e volta ao estado original. */
+  function flashOk(btn, text){
+    const html = btn.dataset.html || btn.innerHTML;
+    const cls = btn.className;
+    btn.className = cls.replace(/\b(gold|green|purple|soft)\b/g, "").trim() + " ok";
+    btn.innerHTML = '<span class="ci">' + ICON.check + '</span><span>' + text + '</span>';
+    btn.disabled = true;
+    setTimeout(() => { btn.className = cls; btn.innerHTML = html; btn.disabled = false; }, 1600);
+  }
+
+  btnSaveApi.addEventListener("click", async () => {
+    const url = normalizeUrl(apiInput.value);
+    if(!url){
+      apiInput.classList.add("bad");
+      shake(apiInput);
+      say(apiInput.value.trim() ? "URL inválida — use um endereço http(s) completo." : "Cole a URL da API.", false);
+      return;
+    }
+    const changed = url !== getApi();
+    if(!setApi(url)){ say("Não foi possível salvar neste navegador.", false); return; }
+
+    apiInput.value = url;
+    apiInput.classList.remove("bad");
+    flashOk(btnSaveApi, "Salvo");
+
+    if(changed){                                     // dados da API antiga não valem mais
+      state.books = []; state.booksLoaded = false; state.needsSetup = false;
+      betsBox.dataset.loaded = ""; emptyBox(betsBox, "Toque em carregar para ver os palpites deste livro.");
+      resetScores();
+    }
+    renderNotices();
+    paintApiState();
+    await checkSheet();
+    await ensureBooks(true);
+    paintApiState();
+  });
+
+  apiInput.addEventListener("input", () => apiInput.classList.remove("bad"));
+  apiInput.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); btnSaveApi.click(); } });
 
   /* ═══ Setup ═══ */
   $("#btnCopyCols").addEventListener("click", async () => {
@@ -1147,6 +1456,7 @@
   });
   $("#btnRecheck").addEventListener("click", async e => {
     const btn = e.currentTarget;
+    if(!guardApi(btn)) return;
     busy(btn, true, "Verificando…");
     await checkSheet();
     busy(btn, false);
@@ -1196,6 +1506,9 @@
   paintGo();
   syncGo();
   emptyBox(betsBox, "Toque em carregar para ver os palpites deste livro.");
+  resetScores();
+  renderNotices();
+  paintApiState();
   checkSheet();
 })();
 </script>
