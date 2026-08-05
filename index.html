@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sorteio de Livros</title>
+<style>
+  :root{
+    --bg-1:#f2f2f7;
+    --bg-2:#e9e9ee;
+    --card:rgba(255,255,255,.72);
+    --card-solid:#fff;
+    --field:rgba(120,120,128,.10);
+    --field-hover:rgba(120,120,128,.16);
+    --hair:rgba(0,0,0,.07);
+    --text:#1c1c1e;
+    --text-2:rgba(60,60,67,.60);
+    --text-3:rgba(60,60,67,.32);
+    --accent:#007aff;
+    --accent-soft:rgba(0,122,255,.12);
+    --danger:#ff3b30;
+    --danger-soft:rgba(255,59,48,.12);
+    --gold:#e8a33d;
+    --shadow-s:0 1px 2px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.05);
+    --shadow-l:0 2px 6px rgba(0,0,0,.04), 0 18px 50px rgba(0,0,0,.10);
+    --radius-card:26px;
+    --radius-row:15px;
+    --ease:cubic-bezier(.32,.72,0,1);
+    --spring:cubic-bezier(.34,1.56,.64,1);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg-1:#000;
+      --bg-2:#141416;
+      --card:rgba(28,28,30,.72);
+      --card-solid:#1c1c1e;
+      --field:rgba(118,118,128,.24);
+      --field-hover:rgba(118,118,128,.34);
+      --hair:rgba(255,255,255,.08);
+      --text:#f5f5f7;
+      --text-2:rgba(235,235,245,.60);
+      --text-3:rgba(235,235,245,.30);
+      --accent:#0a84ff;
+      --accent-soft:rgba(10,132,255,.20);
+      --danger:#ff453a;
+      --danger-soft:rgba(255,69,58,.18);
+      --gold:#ffb340;
+      --shadow-s:0 1px 2px rgba(0,0,0,.4);
+      --shadow-l:0 20px 60px rgba(0,0,0,.6);
+    }
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    font-size:17px;
+    color:var(--text);
+    background:
+      radial-gradient(1200px 700px at 12% -10%, var(--accent-soft), transparent 60%),
+      radial-gradient(900px 600px at 100% 0%, rgba(175,82,222,.10), transparent 55%),
+      linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    background-attachment:fixed;
+    min-height:100%;
+    display:flex;
+    justify-content:center;
+    padding:clamp(20px,5vh,64px) 20px 64px;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+  ul{list-style:none;margin:0;padding:0}
+  svg{display:block}
+
+  /* ─── Layout ─────────────────────────────────────────── */
+  .app{width:100%;max-width:520px;display:flex;flex-direction:column;gap:22px}
+
+  header{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .badge{
+    width:60px;height:60px;border-radius:19px;
+    display:grid;place-items:center;color:#fff;
+    background:linear-gradient(160deg,#0a84ff,#5e5ce6);
+    box-shadow:0 8px 24px rgba(10,132,255,.35);
+    animation:pop .6s var(--spring) both;
+  }
+  h1{margin:2px 0 0;font-size:28px;letter-spacing:-.022em;font-weight:700}
+  .sub{margin:0;font-size:14.5px;color:var(--text-2);letter-spacing:-.01em}
+
+  .card{
+    background:var(--card);
+    -webkit-backdrop-filter:saturate(180%) blur(30px);
+    backdrop-filter:saturate(180%) blur(30px);
+    border:.5px solid var(--hair);
+    border-radius:var(--radius-card);
+    box-shadow:var(--shadow-l);
+    padding:16px;
+    overflow:hidden;
+  }
+
+  .view{transition:opacity .28s var(--ease), transform .32s var(--ease), filter .28s}
+  .view[hidden]{display:none}
+  .view.out{opacity:0;transform:scale(.97);filter:blur(4px)}
+
+  /* ─── Linhas de input ────────────────────────────────── */
+  .row{
+    display:grid;grid-template-rows:1fr;margin-bottom:9px;opacity:1;
+    transition:grid-template-rows .38s var(--ease), opacity .26s var(--ease), margin-bottom .38s var(--ease), transform .38s var(--ease);
+  }
+  .row.enter{grid-template-rows:0fr;opacity:0;margin-bottom:0;transform:translateY(-8px) scale(.97)}
+  .row.leaving{grid-template-rows:0fr;opacity:0;margin-bottom:0;transform:translateX(-14px) scale(.96)}
+  .row-inner{overflow:hidden;min-height:0;display:flex;align-items:center;gap:8px}
+
+  .field{
+    flex:1;min-width:0;
+    background:var(--field);
+    border-radius:var(--radius-row);
+    padding:13px 15px;
+    font-size:16.5px;letter-spacing:-.011em;color:var(--text);
+    border:1.5px solid transparent;
+    outline:none;
+    transition:background .2s, border-color .2s, box-shadow .2s, transform .2s var(--ease);
+  }
+  .field::placeholder{color:var(--text-3)}
+  .field:hover{background:var(--field-hover)}
+  .field:focus{background:var(--card-solid);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+
+  .icon-btn{
+    flex:none;width:36px;height:36px;border-radius:50%;
+    display:grid;place-items:center;color:var(--text-3);
+    transition:background .2s, color .2s, transform .2s var(--spring);
+  }
+  .icon-btn:hover{background:var(--danger-soft);color:var(--danger)}
+  .icon-btn:active{transform:scale(.86)}
+
+  .add{
+    width:100%;height:46px;border-radius:var(--radius-row);
+    display:grid;place-items:center;color:var(--accent);
+    background:var(--accent-soft);
+    transition:transform .22s var(--spring), filter .2s, opacity .2s;
+    margin-top:2px;
+  }
+  .add:hover{filter:brightness(1.06)}
+  .add:active{transform:scale(.965)}
+  .add svg{transition:transform .3s var(--spring)}
+  .add:hover svg{transform:rotate(90deg)}
+
+  /* ─── Segmented control ──────────────────────────────── */
+  .segmented{
+    position:relative;display:grid;grid-template-columns:1fr 1fr;gap:4px;
+    background:var(--field);border-radius:16px;padding:4px;
+    border:.5px solid var(--hair);
+  }
+  .thumb{
+    position:absolute;top:4px;left:4px;bottom:4px;width:calc(50% - 4px);
+    background:var(--card-solid);border-radius:12.5px;
+    box-shadow:var(--shadow-s);
+    transition:transform .38s var(--ease);
+  }
+  .segmented[data-mode="elim"] .thumb{transform:translateX(calc(100% + 4px))}
+  .seg{
+    position:relative;z-index:1;height:42px;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    font-size:14.5px;font-weight:590;letter-spacing:-.01em;color:var(--text-2);
+    transition:color .3s var(--ease), transform .2s var(--ease);
+  }
+  .seg[aria-selected="true"]{color:var(--text)}
+  .seg:active{transform:scale(.97)}
+
+  /* ─── Botão principal ────────────────────────────────── */
+  .cta{
+    height:60px;border-radius:20px;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    color:#fff;font-size:17.5px;font-weight:640;letter-spacing:-.015em;
+    background:linear-gradient(165deg,#0a84ff,#0060df);
+    box-shadow:0 8px 26px rgba(10,132,255,.36);
+    transition:transform .24s var(--spring), box-shadow .24s, opacity .25s, filter .2s;
+  }
+  .cta:hover{filter:brightness(1.06)}
+  .cta:active{transform:scale(.972);box-shadow:0 4px 14px rgba(10,132,255,.3)}
+  .cta:disabled{opacity:.42;filter:grayscale(.4);cursor:not-allowed;transform:none;box-shadow:none}
+  .cta.gold{background:linear-gradient(165deg,#ffb340,#e8901d);box-shadow:0 8px 26px rgba(232,144,29,.36)}
+  .cta.gold:active{box-shadow:0 4px 14px rgba(232,144,29,.3)}
+  .cta svg{transition:transform .45s var(--spring)}
+  .cta:hover svg{transform:rotate(-14deg) scale(1.08)}
+
+  .shake{animation:shake .42s}
+
+  /* ─── Arena (sorteio) ────────────────────────────────── */
+  .winner-bar{
+    display:grid;grid-template-rows:0fr;opacity:0;margin-bottom:0;
+    transition:grid-template-rows .5s var(--ease), opacity .4s, margin-bottom .5s var(--ease);
+  }
+  .winner-bar.show{grid-template-rows:1fr;opacity:1;margin-bottom:14px}
+  .winner-inner{overflow:hidden;min-height:0}
+  .winner-box{
+    display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:19px;
+    background:linear-gradient(135deg,rgba(255,179,64,.18),rgba(255,179,64,.06));
+    border:.5px solid rgba(232,144,29,.35);
+  }
+  .winner-box .t{font-size:12px;font-weight:640;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+  .winner-box .n{font-size:19px;font-weight:680;letter-spacing:-.02em;margin-top:1px;line-height:1.2}
+  .trophy{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:#fff;
+    background:linear-gradient(160deg,#ffc76b,#e8901d);box-shadow:0 6px 18px rgba(232,144,29,.35)}
+
+  .pick{
+    position:relative;display:flex;align-items:center;gap:11px;
+    padding:14px 16px;margin-bottom:9px;border-radius:var(--radius-row);
+    background:var(--field);
+    font-size:16.5px;letter-spacing:-.011em;
+    transition:transform .3s var(--spring), background .3s, opacity .45s var(--ease), color .35s, box-shadow .3s, filter .4s;
+    animation:rowIn .45s var(--ease) both;
+  }
+  .pick .dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--text-3);transition:background .3s, transform .3s var(--spring)}
+  .pick .nm{position:relative;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pick .nm::after{
+    content:"";position:absolute;left:0;top:50%;height:1.5px;width:0;
+    background:currentColor;border-radius:2px;transition:width .42s var(--ease);
+  }
+
+  .pick.spot{
+    background:var(--accent-soft);
+    transform:scale(1.028);
+    box-shadow:0 6px 20px rgba(10,132,255,.18);
+  }
+  .pick.spot .dot{background:var(--accent);transform:scale(1.3)}
+
+  .pick.dead{opacity:.38;color:var(--text-2);filter:blur(.15px);transform:scale(.975)}
+  .pick.dead .nm::after{width:100%}
+  .pick.dead .dot{background:var(--danger);transform:scale(.7)}
+
+  .pick.win{
+    background:linear-gradient(135deg,rgba(255,179,64,.20),rgba(255,179,64,.07));
+    box-shadow:0 10px 30px rgba(232,144,29,.22);
+    transform:scale(1.035);
+    font-weight:640;
+    animation:winPop .6s var(--spring) both;
+  }
+  .pick.win .dot{background:var(--gold);transform:scale(1.35)}
+
+  .counter{
+    text-align:center;font-size:13px;color:var(--text-2);
+    letter-spacing:-.005em;padding:4px 0 12px;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .bar{display:grid;grid-template-columns:60px 1fr;gap:10px}
+  .ghost{
+    height:60px;border-radius:20px;display:grid;place-items:center;
+    background:var(--field);color:var(--text-2);
+    transition:transform .22s var(--spring), background .2s, color .2s;
+  }
+  .ghost:hover{background:var(--field-hover);color:var(--text)}
+  .ghost:active{transform:scale(.95)}
+
+  #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99}
+
+  /* ─── Keyframes ──────────────────────────────────────── */
+  @keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+  @keyframes rowIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+  @keyframes winPop{0%{transform:scale(1)}55%{transform:scale(1.075)}100%{transform:scale(1.035)}}
+  @keyframes shake{
+    10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}
+    30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<main class="app">
+  <header>
+    <div class="badge">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/>
+        <path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/>
+      </svg>
+    </div>
+    <h1>Sorteio de Livros</h1>
+    <p class="sub">Adicione os títulos e deixe a sorte escolher.</p>
+  </header>
+
+  <!-- ── Editor ── -->
+  <section class="card view" id="viewEdit">
+    <ul id="list"></ul>
+    <button class="add" id="btnAdd" title="Adicionar livro" aria-label="Adicionar livro">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+    </button>
+  </section>
+
+  <!-- ── Arena ── -->
+  <section class="card view" id="viewArena" hidden>
+    <div class="winner-bar" id="winnerBar">
+      <div class="winner-inner">
+        <div class="winner-box">
+          <div class="trophy">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 0 1-12 0z"/>
+              <path d="M6 5H3.5v1.5A3.5 3.5 0 0 0 6.6 10M18 5h2.5v1.5A3.5 3.5 0 0 1 17.4 10"/>
+            </svg>
+          </div>
+          <div style="min-width:0">
+            <div class="t">Vencedor</div>
+            <div class="n" id="winnerName"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="counter" id="counter"></div>
+    <ul id="picks"></ul>
+  </section>
+
+  <!-- ── Controles ── -->
+  <div class="segmented" id="segmented" data-mode="single" role="tablist" aria-label="Modo de sorteio">
+    <span class="thumb" aria-hidden="true"></span>
+    <button class="seg" role="tab" data-mode="single" aria-selected="true" title="Sorteio único: escolhe o vencedor de uma vez">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="5"/>
+        <circle cx="8.5" cy="8.5" r="1.35" fill="currentColor" stroke="none"/>
+        <circle cx="12" cy="12" r="1.35" fill="currentColor" stroke="none"/>
+        <circle cx="15.5" cy="15.5" r="1.35" fill="currentColor" stroke="none"/>
+      </svg>
+      Único
+    </button>
+    <button class="seg" role="tab" data-mode="elim" aria-selected="false" title="Eliminação: remove um por clique até sobrar o vencedor">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 2 4.5 13.2H10l-1 8.8 8.5-11.2H12z"/>
+      </svg>
+      Eliminação
+    </button>
+  </div>
+
+  <div class="bar">
+    <button class="ghost" id="btnBack" title="Voltar e editar" aria-label="Voltar e editar" style="visibility:hidden">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9.5 14.5 4 9l5.5-5.5"/><path d="M4 9h11a5.5 5.5 0 0 1 0 11h-3.5"/>
+      </svg>
+    </button>
+    <button class="cta" id="btnGo" title="Sortear" aria-label="Sortear">
+      <span id="goIcon"></span>
+      <span id="goText">Sortear</span>
+    </button>
+  </div>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const $  = s => document.querySelector(s);
+  const list = $("#list"), picks = $("#picks"), segmented = $("#segmented");
+  const viewEdit = $("#viewEdit"), viewArena = $("#viewArena");
+  const btnGo = $("#btnGo"), goIcon = $("#goIcon"), goText = $("#goText");
+  const btnBack = $("#btnBack"), winnerBar = $("#winnerBar"), winnerName = $("#winnerName");
+  const counter = $("#counter");
+
+  const ICON = {
+    play:  '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M7.5 4.9c0-1 1.1-1.6 2-1.1l10 6.9c.8.5.8 1.7 0 2.2l-10 6.9c-.9.6-2 0-2-1z"/></svg>',
+    bolt:  '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.2H10l-1 8.8 8.5-11.2H12z"/></svg>',
+    again: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-.7 4.5"/><path d="M20 4.5V11h-6"/></svg>',
+    trash: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16"/><path d="M9.5 6.5V4.2h5v2.3"/><path d="M6.3 6.5 7.2 20h9.6l.9-13.5"/><path d="M10.3 10.5v6M13.7 10.5v6"/></svg>'
+  };
+
+  let mode = "single";           // "single" | "elim"
+  let phase = "edit";            // "edit" | "spin" | "elim" | "done"
+  let pool = [];                 // [{name, el, dead}]
+
+  /* ────────── Editor ────────── */
+  function addRow(value = "", focus = false){
+    const li = document.createElement("li");
+    li.className = "row enter";
+    li.innerHTML =
+      '<div class="row-inner">' +
+        '<input class="field" type="text" maxlength="80" placeholder="Nome do livro" autocomplete="off" spellcheck="false">' +
+        '<button class="icon-btn" title="Remover" aria-label="Remover livro">' + ICON.trash + '</button>' +
+      '</div>';
+    const input = li.querySelector("input");
+    input.value = value;
+    li.querySelector("button").addEventListener("click", () => removeRow(li));
+    input.addEventListener("keydown", e => {
+      if(e.key === "Enter"){ e.preventDefault(); addRow("", true); }
+      if(e.key === "Backspace" && !input.value && list.children.length > 1){
+        e.preventDefault();
+        const prev = li.previousElementSibling;
+        removeRow(li);
+        if(prev) prev.querySelector("input").focus();
+      }
+    });
+    input.addEventListener("input", syncGo);
+    list.appendChild(li);
+    void li.offsetHeight;              // trava o estado inicial antes de animar
+    li.classList.remove("enter");
+    if(focus) input.focus();
+    syncGo();
+  }
+
+  function removeRow(li){
+    if(li.classList.contains("leaving")) return;
+    if(list.querySelectorAll(".row:not(.leaving)").length === 1) addRow("", false);
+    li.classList.add("leaving");
+    let gone = false;
+    const drop = () => { if(gone) return; gone = true; li.remove(); syncGo(); };
+    li.addEventListener("transitionend", e => { if(e.propertyName === "opacity") drop(); });
+    setTimeout(drop, 500);             // rede de segurança se a transição não disparar
+    syncGo();
+  }
+
+  const names = () => [...list.querySelectorAll(".row:not(.leaving) input")]
+    .map(i => i.value.trim()).filter(Boolean);
+
+  function syncGo(){
+    if(phase !== "edit") return;
+    btnGo.disabled = names().length < 2;
+  }
+
+  /* ────────── Modo ────────── */
+  segmented.querySelectorAll(".seg").forEach(b => b.addEventListener("click", () => {
+    if(b.dataset.mode === mode) return;
+    mode = b.dataset.mode;
+    segmented.dataset.mode = mode;
+    segmented.querySelectorAll(".seg").forEach(x => x.setAttribute("aria-selected", x.dataset.mode === mode));
+    if(phase !== "edit") toEdit();
+    paintGo();
+  }));
+
+  function paintGo(){
+    if(phase === "edit"){
+      goIcon.innerHTML = ICON.play;
+      goText.textContent = mode === "single" ? "Sortear" : "Iniciar eliminação";
+      btnGo.classList.remove("gold");
+      btnGo.title = goText.textContent;
+    } else if(phase === "elim"){
+      goIcon.innerHTML = ICON.bolt;
+      goText.textContent = "Eliminar";
+      btnGo.classList.remove("gold");
+      btnGo.title = "Eliminar um livro";
+    } else if(phase === "done"){
+      goIcon.innerHTML = ICON.again;
+      goText.textContent = "Sortear de novo";
+      btnGo.classList.add("gold");
+      btnGo.title = "Sortear de novo";
+    }
+  }
+
+  /* ────────── Transição de views ────────── */
+  function swap(hide, show, after){
+    hide.classList.add("out");
+    setTimeout(() => {
+      hide.hidden = true; hide.classList.remove("out");
+      show.hidden = false; show.classList.add("out");
+      void show.offsetHeight;
+      show.classList.remove("out");
+      after && after();
+    }, 240);
+  }
+
+  /* ────────── Arena ────────── */
+  function buildPool(){
+    pool = names().map(name => {
+      const li = document.createElement("li");
+      li.className = "pick";
+      li.innerHTML = '<span class="dot"></span><span class="nm"></span>';
+      li.querySelector(".nm").textContent = name;
+      picks.appendChild(li);
+      return { name, el: li, dead: false };
+    });
+  }
+
+  function alive(){ return pool.filter(p => !p.dead); }
+
+  function updateCounter(){
+    const n = alive().length;
+    counter.textContent = phase === "done" ? "" : n + (n === 1 ? " livro na disputa" : " livros na disputa");
+  }
+
+  function start(){
+    picks.innerHTML = "";
+    winnerBar.classList.remove("show");
+    buildPool();
+    btnBack.style.visibility = "visible";
+    swap(viewEdit, viewArena, () => {
+      if(mode === "single"){ phase = "spin"; paintGo(); spin(); }
+      else { phase = "elim"; paintGo(); updateCounter(); }
+    });
+  }
+
+  function toEdit(){
+    phase = "edit";
+    btnBack.style.visibility = "hidden";
+    btnGo.disabled = false;
+    paintGo();
+    swap(viewArena, viewEdit, () => { picks.innerHTML = ""; syncGo(); });
+  }
+
+  function restart(){
+    pool.forEach(p => { p.dead = false; p.el.classList.remove("dead","win","spot"); });
+    winnerBar.classList.remove("show");
+    if(mode === "single"){ phase = "spin"; paintGo(); spin(); }
+    else { phase = "elim"; paintGo(); updateCounter(); }
+  }
+
+  /* Modo 1 — roleta e vencedor direto */
+  function spin(){
+    btnGo.disabled = true;
+    counter.textContent = "Sorteando…";
+    const winner = pool[rand(pool.length)];
+    const total = pool.length * 4 + rand(pool.length);
+    let i = 0, step = 0;
+
+    (function tick(){
+      pool.forEach(p => p.el.classList.remove("spot"));
+      pool[i % pool.length].el.classList.add("spot");
+      i++; step++;
+      if(step >= total && pool[(i - 1) % pool.length] === winner){
+        setTimeout(() => {
+          pool.forEach(p => {
+            p.el.classList.remove("spot");
+            if(p !== winner){ p.dead = true; p.el.classList.add("dead"); }
+          });
+          declare(winner);
+        }, 320);
+        return;
+      }
+      const t = Math.min(step / total, 1);
+      setTimeout(tick, 55 + Math.pow(t, 3) * 260);
+    })();
+  }
+
+  /* Modo 2 — eliminação por clique */
+  function eliminate(){
+    const left = alive();
+    if(left.length <= 1) return;
+    const victim = left[rand(left.length)];
+    victim.el.classList.add("spot");
+    btnGo.disabled = true;
+    setTimeout(() => {
+      victim.el.classList.remove("spot");
+      victim.dead = true;
+      victim.el.classList.add("dead");
+      updateCounter();
+      const rest = alive();
+      if(rest.length === 1){ setTimeout(() => declare(rest[0]), 420); }
+      else { btnGo.disabled = false; }
+    }, 260);
+  }
+
+  function declare(winner){
+    phase = "done";
+    winner.el.classList.add("win");
+    winnerName.textContent = winner.name;
+    winnerBar.classList.add("show");
+    counter.textContent = "";
+    btnGo.disabled = false;
+    paintGo();
+    confetti();
+  }
+
+  /* ────────── Botões ────────── */
+  btnGo.addEventListener("click", () => {
+    if(phase === "edit"){
+      if(names().length < 2){
+        btnGo.classList.add("shake");
+        setTimeout(() => btnGo.classList.remove("shake"), 450);
+        return;
+      }
+      start();
+    }
+    else if(phase === "elim") eliminate();
+    else if(phase === "done") restart();
+  });
+  btnBack.addEventListener("click", toEdit);
+  $("#btnAdd").addEventListener("click", () => addRow("", true));
+
+  const rand = n => Math.floor(Math.random() * n);
+
+  /* ────────── Confete ────────── */
+  const cv = $("#confetti"), ctx = cv.getContext("2d");
+  let parts = [], raf = 0;
+  function confetti(){
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const colors = ["#0a84ff","#ffb340","#30d158","#ff375f","#bf5af2","#64d2ff"];
+    parts = Array.from({length: 130}, () => ({
+      x: innerWidth / 2 + (Math.random() - .5) * 220,
+      y: innerHeight * .34,
+      vx: (Math.random() - .5) * 11,
+      vy: -8 - Math.random() * 9,
+      s: 4 + Math.random() * 6,
+      r: Math.random() * Math.PI,
+      vr: (Math.random() - .5) * .3,
+      c: colors[rand(colors.length)],
+      life: 1
+    }));
+    cancelAnimationFrame(raf);
+    (function loop(){
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      let live = 0;
+      for(const p of parts){
+        p.vy += .30; p.vx *= .992; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        if(p.y > innerHeight * .6) p.life -= .012;
+        if(p.life <= 0) continue;
+        live++;
+        ctx.save();
+        ctx.globalAlpha = Math.max(p.life, 0);
+        ctx.translate(p.x, p.y); ctx.rotate(p.r);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 1.5);
+        ctx.restore();
+      }
+      if(live) raf = requestAnimationFrame(loop);
+      else ctx.clearRect(0, 0, innerWidth, innerHeight);
+    })();
+  }
+
+  /* ────────── Início ────────── */
+  ["", "", ""].forEach(v => addRow(v));
+  paintGo();
+  syncGo();
+})();
+</script>
+</body>
+</html>
